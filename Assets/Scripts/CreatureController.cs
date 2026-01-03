@@ -12,13 +12,17 @@ public class CreatureController : MonoBehaviour
         HiddenWatching,
         Peeking,
         CuriousApproach,
-        HesitantNearPlayer
+        HesitantNearPlayer,
+        CalmNearPlayer
     }
 
     [Header("References")]
     [SerializeField] private Transform player;
     [SerializeField] private Transform hidePoint;
     [SerializeField] private Transform peekPoint;
+    [SerializeField] private ScanTarget scanTarget;
+    [SerializeField] private ScannableObject scannable;
+    [SerializeField] private ArchiveManager archiveManager;
 
     [Header("Distances")]
     [SerializeField] private float watchRadius = 8f;
@@ -31,16 +35,45 @@ public class CreatureController : MonoBehaviour
     [SerializeField] private Vector2 idlePauseRange = new Vector2(1.2f, 2.4f);
     [SerializeField] private float lookAtSpeed = 4f;
 
+    [Header("Encounter")]
+    [SerializeField] private float calmDuration = 1.6f;
+
     private NavMeshAgent agent;
     private CreatureState currentState = CreatureState.HiddenWatching;
     private float idleTimer;
     private float idleDuration;
     private bool isIdling;
+    private float calmTimer;
+    private bool hasBeenScanned;
 
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
         idleDuration = Random.Range(idlePauseRange.x, idlePauseRange.y);
+        if (scanTarget == null)
+        {
+            scanTarget = GetComponentInChildren<ScanTarget>(true);
+        }
+
+        if (scannable == null)
+        {
+            scannable = GetComponentInChildren<ScannableObject>(true);
+        }
+
+        if (archiveManager == null)
+        {
+            archiveManager = FindObjectOfType<ArchiveManager>();
+        }
+
+        SetScanAvailable(false);
+    }
+
+    private void OnEnable()
+    {
+        if (scannable != null)
+        {
+            scannable.OnScanComplete.AddListener(HandleScanComplete);
+        }
     }
 
     private void Start()
@@ -57,6 +90,14 @@ public class CreatureController : MonoBehaviour
             {
                 player = playerObject.transform;
             }
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (scannable != null)
+        {
+            scannable.OnScanComplete.RemoveListener(HandleScanComplete);
         }
     }
 
@@ -82,6 +123,9 @@ public class CreatureController : MonoBehaviour
                 break;
             case CreatureState.HesitantNearPlayer:
                 HandleHesitantNearPlayer(distanceToPlayer);
+                break;
+            case CreatureState.CalmNearPlayer:
+                HandleCalmNearPlayer(distanceToPlayer);
                 break;
         }
     }
@@ -151,6 +195,32 @@ public class CreatureController : MonoBehaviour
             agent.SetDestination(retreatTarget);
         }
 
+        FacePlayerWhenIdle();
+
+        if (distanceToPlayer > approachRadius + returnBuffer)
+        {
+            TransitionTo(CreatureState.CuriousApproach);
+            return;
+        }
+
+        if (distanceToPlayer <= hesitantRadius && isIdling)
+        {
+            calmTimer += Time.deltaTime;
+            if (calmTimer >= calmDuration)
+            {
+                TransitionTo(CreatureState.CalmNearPlayer);
+            }
+        }
+        else
+        {
+            calmTimer = 0f;
+        }
+    }
+
+    private void HandleCalmNearPlayer(float distanceToPlayer)
+    {
+        agent.isStopped = true;
+        isIdling = true;
         FacePlayerWhenIdle();
 
         if (distanceToPlayer > approachRadius + returnBuffer)
@@ -227,5 +297,28 @@ public class CreatureController : MonoBehaviour
         idleTimer = 0f;
         idleDuration = Random.Range(idlePauseRange.x, idlePauseRange.y);
         isIdling = false;
+        calmTimer = 0f;
+        if (!hasBeenScanned)
+        {
+            SetScanAvailable(nextState == CreatureState.CalmNearPlayer);
+        }
+    }
+
+    private void SetScanAvailable(bool available)
+    {
+        if (scanTarget != null)
+        {
+            scanTarget.enabled = available;
+        }
+    }
+
+    private void HandleScanComplete()
+    {
+        hasBeenScanned = true;
+        SetScanAvailable(true);
+        if (archiveManager != null)
+        {
+            archiveManager.HandleScanCompleted();
+        }
     }
 }

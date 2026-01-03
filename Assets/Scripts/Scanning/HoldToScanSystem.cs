@@ -117,7 +117,7 @@ public class HoldToScanSystem : MonoBehaviour
         }
 
         target = hit.collider.GetComponentInParent<ScanTarget>();
-        return target != null;
+        return target != null && target.isActiveAndEnabled;
     }
 
     private bool IsTargetStillValid()
