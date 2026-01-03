@@ -34,6 +34,7 @@ public class HoldToScanSystem : MonoBehaviour
 
     private float scanElapsed;
     private ScanTarget currentTarget;
+    private ScannableObject currentScannable;
     private Vector3 initialAimDirection;
 
     private void Awake()
@@ -95,11 +96,13 @@ public class HoldToScanSystem : MonoBehaviour
         if (TryGetTarget(out ScanTarget target))
         {
             currentTarget = target;
+            currentScannable = target.GetComponentInParent<ScannableObject>();
             scanElapsed = 0f;
             initialAimDirection = (target.ScanPoint - scanOrigin.position).normalized;
             SetUiVisible(true);
             UpdateProgressUi(0f);
             StartScanAudio();
+            currentScannable?.TriggerScanStart();
         }
     }
 
@@ -149,6 +152,7 @@ public class HoldToScanSystem : MonoBehaviour
 
     private void CompleteScan()
     {
+        currentScannable?.TriggerScanComplete();
         OnScanCompleted?.Invoke();
         CancelScan();
     }
@@ -161,6 +165,7 @@ public class HoldToScanSystem : MonoBehaviour
         }
 
         currentTarget = null;
+        currentScannable = null;
         scanElapsed = 0f;
         UpdateProgressUi(0f);
         SetUiVisible(false);
