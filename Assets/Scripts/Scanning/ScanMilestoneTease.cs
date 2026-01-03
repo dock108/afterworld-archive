@@ -48,7 +48,7 @@ public class ScanMilestoneTease : MonoBehaviour
             return;
         }
 
-        ArchiveLogUI.AppendEntry("PATTERN NOTED");
+        ArchiveLogUI.AppendEntry("Milestone logged. I will act surprised.");
         ArchiveLogUI.TriggerGlitch(glitchDuration, glitchMaxOffset, glitchMinInterval, glitchMaxInterval);
     }
 }
