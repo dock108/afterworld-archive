@@ -1,6 +1,9 @@
 using Cinemachine;
 using UnityEngine;
 
+/// <summary>
+/// Ensures the scene has a player, ground plane, and configured follow camera at runtime.
+/// </summary>
 public class ThirdPersonBootstrap : MonoBehaviour
 {
     [SerializeField] private string playerName = "Player";
@@ -16,6 +19,7 @@ public class ThirdPersonBootstrap : MonoBehaviour
 
     private void EnsureGround()
     {
+        // Keep scene setup idempotent so reloading doesn't spawn duplicates.
         if (GameObject.Find("Ground") != null)
         {
             return;
@@ -42,6 +46,7 @@ public class ThirdPersonBootstrap : MonoBehaviour
 
             player.AddComponent<ThirdPersonController>();
 
+            // Lightweight visual to represent the player without external assets.
             GameObject visuals = GameObject.CreatePrimitive(PrimitiveType.Capsule);
             visuals.name = "Visual";
             visuals.transform.SetParent(player.transform);
@@ -67,46 +72,27 @@ public class ThirdPersonBootstrap : MonoBehaviour
             return;
         }
 
-        if (mainCamera.GetComponent<CinemachineBrain>() == null)
-        {
-            mainCamera.gameObject.AddComponent<CinemachineBrain>();
-        }
+        GetOrAddComponent<CinemachineBrain>(mainCamera.gameObject);
 
         GameObject vcamObject = GameObject.Find("ThirdPersonCamera");
         CinemachineVirtualCamera vcam;
         if (vcamObject == null)
         {
             vcamObject = new GameObject("ThirdPersonCamera");
-            vcam = vcamObject.AddComponent<CinemachineVirtualCamera>();
         }
-        else
-        {
-            vcam = vcamObject.GetComponent<CinemachineVirtualCamera>();
-            if (vcam == null)
-            {
-                vcam = vcamObject.AddComponent<CinemachineVirtualCamera>();
-            }
-        }
+        vcam = GetOrAddComponent<CinemachineVirtualCamera>(vcamObject);
 
         vcam.Follow = followTarget;
         vcam.LookAt = followTarget;
 
-        CinemachineTransposer transposer = vcam.GetCinemachineComponent<CinemachineTransposer>();
-        if (transposer == null)
-        {
-            transposer = vcam.AddCinemachineComponent<CinemachineTransposer>();
-        }
+        CinemachineTransposer transposer = GetOrAddCinemachineComponent<CinemachineTransposer>(vcam);
 
         transposer.m_FollowOffset = cameraOffset;
         transposer.m_XDamping = 0.6f;
         transposer.m_YDamping = 0.8f;
         transposer.m_ZDamping = 0.9f;
 
-        CinemachineComposer composer = vcam.GetCinemachineComponent<CinemachineComposer>();
-        if (composer == null)
-        {
-            composer = vcam.AddCinemachineComponent<CinemachineComposer>();
-        }
+        CinemachineComposer composer = GetOrAddCinemachineComponent<CinemachineComposer>(vcam);
 
         composer.m_ScreenX = 0.5f;
         composer.m_ScreenY = 0.55f;
@@ -116,5 +102,28 @@ public class ThirdPersonBootstrap : MonoBehaviour
         composer.m_SoftZoneHeight = 0.8f;
         composer.m_HorizontalDamping = 0.6f;
         composer.m_VerticalDamping = 0.6f;
+    }
+
+    private static T GetOrAddComponent<T>(GameObject target) where T : Component
+    {
+        T component = target.GetComponent<T>();
+        if (component == null)
+        {
+            component = target.AddComponent<T>();
+        }
+
+        return component;
+    }
+
+    private static T GetOrAddCinemachineComponent<T>(CinemachineVirtualCamera vcam)
+        where T : CinemachineComponentBase
+    {
+        T component = vcam.GetCinemachineComponent<T>();
+        if (component == null)
+        {
+            component = vcam.AddCinemachineComponent<T>();
+        }
+
+        return component;
     }
 }

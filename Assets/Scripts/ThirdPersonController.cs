@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// Handles third-person character motion driven by WASD input.
+/// </summary>
 [RequireComponent(typeof(CharacterController))]
 public class ThirdPersonController : MonoBehaviour
 {
@@ -31,6 +34,7 @@ public class ThirdPersonController : MonoBehaviour
         bool wantsJog = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
         float targetSpeed = (wantsJog ? jogSpeed : walkSpeed) * inputMagnitude;
 
+        // Default to world axes when no main camera is present (e.g., tests or headless runs).
         Vector3 cameraForward = Vector3.forward;
         Vector3 cameraRight = Vector3.right;
         if (Camera.main != null)
@@ -62,6 +66,7 @@ public class ThirdPersonController : MonoBehaviour
 
         if (controller.isGrounded)
         {
+            // Keep the controller grounded without accumulating extra downward speed.
             if (verticalVelocity < 0f)
             {
                 verticalVelocity = groundedVelocity;
