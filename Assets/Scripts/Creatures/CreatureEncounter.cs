@@ -120,6 +120,8 @@ public class CreatureEncounter : MonoBehaviour
             return;
         }
 
+        EncounterFailureTracker.RegisterFailure(creature.Id);
+
         float cooldownMin = Mathf.Max(0f, elusiveCooldownMin);
         float cooldownMax = Mathf.Max(cooldownMin, elusiveCooldownMax);
         float chanceMin = Mathf.Clamp01(elusiveReturnChanceMin);

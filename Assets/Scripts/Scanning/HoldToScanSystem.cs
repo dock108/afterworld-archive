@@ -154,6 +154,7 @@ public class HoldToScanSystem : MonoBehaviour
     {
         currentScannable?.TriggerScanComplete();
         OnScanCompleted?.Invoke();
+        ScanProgressTracker.RegisterScan();
         CancelScan();
     }
 

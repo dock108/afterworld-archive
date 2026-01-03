@@ -112,6 +112,20 @@ public class ArchiveManager : MonoBehaviour
         OnStateChanged?.Invoke(newState);
     }
 
+    public void LoadState(ArchiveState newState)
+    {
+        if (transitionRoutine != null)
+        {
+            StopCoroutine(transitionRoutine);
+            transitionRoutine = null;
+        }
+
+        currentState = newState;
+        hasActivated = newState != ArchiveState.Offline;
+        ApplyState(newState, true);
+        OnStateChanged?.Invoke(newState);
+    }
+
     private void ApplyState(ArchiveState state, bool immediate)
     {
         switch (state)
