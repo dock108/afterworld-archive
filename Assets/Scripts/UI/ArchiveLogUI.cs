@@ -39,6 +39,7 @@ public class ArchiveLogUI : MonoBehaviour
 
     private readonly List<string> messages = new List<string>();
     private Coroutine messageRoutine;
+    private Coroutine glitchRoutine;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void EnsureInstance()
@@ -67,6 +68,18 @@ public class ArchiveLogUI : MonoBehaviour
         }
 
         logUi.AppendMessage(message);
+    }
+
+    public static void TriggerGlitch(float duration, float maxOffset, float minInterval, float maxInterval)
+    {
+        ArchiveLogUI logUi = FindObjectOfType<ArchiveLogUI>();
+        if (logUi == null)
+        {
+            GameObject logObject = new GameObject("Archive Log UI");
+            logUi = logObject.AddComponent<ArchiveLogUI>();
+        }
+
+        logUi.PlayGlitch(duration, maxOffset, minInterval, maxInterval);
     }
 
     private void Awake()
@@ -186,6 +199,58 @@ public class ArchiveLogUI : MonoBehaviour
         }
 
         AddMessage(message);
+    }
+
+    private void PlayGlitch(float duration, float maxOffset, float minInterval, float maxInterval)
+    {
+        if (canvasGroup == null || logText == null)
+        {
+            return;
+        }
+
+        if (duration <= 0f || maxOffset <= 0f)
+        {
+            return;
+        }
+
+        if (glitchRoutine != null)
+        {
+            StopCoroutine(glitchRoutine);
+        }
+
+        glitchRoutine = StartCoroutine(GlitchRoutine(duration, maxOffset, minInterval, maxInterval));
+    }
+
+    private IEnumerator GlitchRoutine(float duration, float maxOffset, float minInterval, float maxInterval)
+    {
+        float elapsed = 0f;
+        float originalAlpha = canvasGroup.alpha;
+        RectTransform textTransform = logText.rectTransform;
+        Vector2 originalPosition = textTransform.anchoredPosition;
+        Color originalColor = logText.color;
+        float intervalMin = Mathf.Max(0.01f, minInterval);
+        float intervalMax = Mathf.Max(intervalMin, maxInterval);
+
+        while (elapsed < duration)
+        {
+            canvasGroup.alpha = Random.Range(0.3f, 1f);
+            textTransform.anchoredPosition = originalPosition + Random.insideUnitCircle * maxOffset;
+
+            Color flicker = originalColor;
+            flicker.r = Mathf.Clamp01(flicker.r + Random.Range(-0.05f, 0.05f));
+            flicker.g = Mathf.Clamp01(flicker.g + Random.Range(-0.05f, 0.05f));
+            flicker.b = Mathf.Clamp01(flicker.b + Random.Range(-0.05f, 0.05f));
+            logText.color = flicker;
+
+            float waitTime = Random.Range(intervalMin, intervalMax);
+            elapsed += waitTime;
+            yield return new WaitForSeconds(waitTime);
+        }
+
+        canvasGroup.alpha = originalAlpha;
+        textTransform.anchoredPosition = originalPosition;
+        logText.color = originalColor;
+        glitchRoutine = null;
     }
 
     private void ConfigureCanvasGroup()
