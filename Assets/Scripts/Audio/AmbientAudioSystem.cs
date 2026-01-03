@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEngine.Audio;
 
+/// <summary>
+/// Generates lightweight ambient audio clips and routes them through an audio mixer.
+/// </summary>
 public class AmbientAudioSystem : MonoBehaviour
 {
     [Header("Mixer")]
@@ -36,6 +39,7 @@ public class AmbientAudioSystem : MonoBehaviour
 
     private void OnValidate()
     {
+        // Keep inspector adjustments reflected in the live mixer when possible.
         ApplyMixerVolumes();
         UpdateSourceVolumes();
     }
@@ -108,6 +112,7 @@ public class AmbientAudioSystem : MonoBehaviour
             return;
         }
 
+        // Unity mixers expect decibel values, so convert linear sliders.
         mixer.SetFloat(masterVolumeParam, ToDecibels(masterVolume));
         mixer.SetFloat(ambienceVolumeParam, ToDecibels(ambienceVolume));
     }
@@ -122,6 +127,7 @@ public class AmbientAudioSystem : MonoBehaviour
         int lengthSamples = Mathf.CeilToInt(windLoopSeconds * sampleRate);
         float[] data = new float[lengthSamples];
 
+        // Layer multiple sines and a slow LFO to approximate turbulent wind.
         var random = new System.Random(48291);
         int layers = 6;
         float[] frequencies = new float[layers];
@@ -162,6 +168,7 @@ public class AmbientAudioSystem : MonoBehaviour
         int lengthSamples = Mathf.CeilToInt(humLoopSeconds * sampleRate);
         float[] data = new float[lengthSamples];
 
+        // Build a subtle tonal bed with gentle detune and harmonics.
         float baseFrequency = 110f;
         float detuneFrequency = 0.6f;
         float detuneDepth = 1.8f;
