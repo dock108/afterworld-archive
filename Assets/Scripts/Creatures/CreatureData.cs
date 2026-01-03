@@ -25,5 +25,6 @@ public enum CreatureRarity
 {
     Common,
     Uncommon,
-    Rare
+    Rare,
+    Mythic
 }
