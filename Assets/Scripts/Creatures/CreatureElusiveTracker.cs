@@ -70,4 +70,48 @@ public static class CreatureElusiveTracker
 
         Records.Remove(creatureId);
     }
+
+    public static List<ElusiveRecordData> CreateRecords()
+    {
+        List<ElusiveRecordData> records = new List<ElusiveRecordData>();
+        foreach (KeyValuePair<string, ElusiveRecord> entry in Records)
+        {
+            float remaining = Mathf.Max(0f, entry.Value.EligibleTime - Time.time);
+            records.Add(new ElusiveRecordData
+            {
+                CreatureId = entry.Key,
+                RemainingCooldown = remaining,
+                MinChance = entry.Value.MinChance,
+                MaxChance = entry.Value.MaxChance,
+                RampDuration = entry.Value.RampDuration
+            });
+        }
+
+        return records;
+    }
+
+    public static void LoadRecords(IEnumerable<ElusiveRecordData> records)
+    {
+        Records.Clear();
+        if (records == null)
+        {
+            return;
+        }
+
+        foreach (ElusiveRecordData record in records)
+        {
+            if (record == null || string.IsNullOrWhiteSpace(record.CreatureId))
+            {
+                continue;
+            }
+
+            Records[record.CreatureId] = new ElusiveRecord
+            {
+                EligibleTime = Time.time + Mathf.Max(0f, record.RemainingCooldown),
+                MinChance = Mathf.Clamp01(record.MinChance),
+                MaxChance = Mathf.Clamp(record.MaxChance, 0f, 1f),
+                RampDuration = Mathf.Max(0f, record.RampDuration)
+            };
+        }
+    }
 }

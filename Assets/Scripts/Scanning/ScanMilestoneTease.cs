@@ -12,7 +12,8 @@ public class ScanMilestoneTease : MonoBehaviour
     [SerializeField] private float glitchMinInterval = 0.03f;
     [SerializeField] private float glitchMaxInterval = 0.08f;
 
-    private int scanCount;
+    private int lastScanCount;
+    private bool hasTriggeredMilestone;
 
     private void OnEnable()
     {
@@ -25,6 +26,10 @@ public class ScanMilestoneTease : MonoBehaviour
         {
             scanSystem.OnScanCompleted.AddListener(HandleScanCompleted);
         }
+
+        lastScanCount = ScanProgressTracker.ScanCount;
+        hasTriggeredMilestone = milestoneScanIndex > 0 && lastScanCount >= milestoneScanIndex;
+        ScanProgressTracker.OnScanCountChanged += HandleScanCountChanged;
     }
 
     private void OnDisable()
@@ -33,21 +38,34 @@ public class ScanMilestoneTease : MonoBehaviour
         {
             scanSystem.OnScanCompleted.RemoveListener(HandleScanCompleted);
         }
+
+        ScanProgressTracker.OnScanCountChanged -= HandleScanCountChanged;
     }
 
     private void HandleScanCompleted()
     {
-        if (milestoneScanIndex <= 0)
+        HandleScanCountChanged(ScanProgressTracker.ScanCount);
+    }
+
+    private void HandleScanCountChanged(int scanCount)
+    {
+        if (hasTriggeredMilestone || milestoneScanIndex <= 0)
         {
+            lastScanCount = scanCount;
             return;
         }
 
-        scanCount++;
-        if (scanCount != milestoneScanIndex)
+        if (lastScanCount < milestoneScanIndex && scanCount >= milestoneScanIndex)
         {
-            return;
+            hasTriggeredMilestone = true;
+            TriggerMilestone();
         }
 
+        lastScanCount = scanCount;
+    }
+
+    private void TriggerMilestone()
+    {
         ArchiveLogUI.AppendEntry("Milestone logged. I will act surprised.");
         ArchiveLogUI.TriggerGlitch(glitchDuration, glitchMaxOffset, glitchMinInterval, glitchMaxInterval);
     }

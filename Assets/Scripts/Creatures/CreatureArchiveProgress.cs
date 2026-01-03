@@ -52,6 +52,40 @@ public static class CreatureArchiveProgress
         return CalculateKnowledgeTotal();
     }
 
+    public static List<CreatureKnowledgeRecord> CreateRecords()
+    {
+        List<CreatureKnowledgeRecord> records = new List<CreatureKnowledgeRecord>();
+        foreach (KeyValuePair<string, CreatureUnderstandingState> entry in UnderstandingById)
+        {
+            records.Add(new CreatureKnowledgeRecord
+            {
+                CreatureId = entry.Key,
+                State = entry.Value
+            });
+        }
+
+        return records;
+    }
+
+    public static void LoadRecords(IEnumerable<CreatureKnowledgeRecord> records)
+    {
+        UnderstandingById.Clear();
+        if (records != null)
+        {
+            foreach (CreatureKnowledgeRecord record in records)
+            {
+                if (record == null || string.IsNullOrWhiteSpace(record.CreatureId))
+                {
+                    continue;
+                }
+
+                UnderstandingById[record.CreatureId] = record.State;
+            }
+        }
+
+        NotifyKnowledgeChanged();
+    }
+
     private static void NotifyKnowledgeChanged()
     {
         int total = CalculateKnowledgeTotal();
