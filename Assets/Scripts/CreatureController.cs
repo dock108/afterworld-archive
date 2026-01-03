@@ -50,7 +50,8 @@ public class CreatureController : MonoBehaviour
     private bool isIdling;
     private float calmTimer;
     private bool hasBeenScanned;
-    private bool hasTriggeredEncounter;
+    private bool hasShownEncounter;
+    private bool hasStartedMiniGame;
     private bool isResolvingInstinct;
     private Coroutine instinctRoutine;
 
@@ -333,12 +334,45 @@ public class CreatureController : MonoBehaviour
         calmTimer = 0f;
         if (!hasBeenScanned)
         {
-            SetScanAvailable(nextState == CreatureState.Engaged);
+            SetScanAvailable(ShouldAllowScanForState(nextState));
         }
 
-        if (nextState == CreatureState.Engaged && !hasTriggeredEncounter)
+        if (nextState == CreatureState.Engaged && !hasShownEncounter)
         {
-            TriggerEncounterFlow();
+            TriggerEncounterPresence();
+        }
+
+        if (nextState == CreatureState.Engaged && hasBeenScanned)
+        {
+            TryStartMiniGame();
+        }
+    }
+
+    private bool ShouldAllowScanForState(CreatureState state)
+    {
+        return state == CreatureState.Engaged
+            || state == CreatureState.HesitantNearPlayer
+            || state == CreatureState.CuriousApproach
+            || state == CreatureState.Peeking;
+    }
+
+    private void TriggerEncounterPresence()
+    {
+        if (hasShownEncounter)
+        {
+            return;
+        }
+
+        hasShownEncounter = true;
+        encounter?.RegisterEncounter();
+        OnboardingHintSystem.NotifyCreatureEncounter();
+        if (encounter != null)
+        {
+            EncounterUI.ShowEncounter(encounter.Creature);
+        }
+        if (scanTarget == null || scannable == null)
+        {
+            TryStartMiniGame();
         }
     }
 
@@ -364,18 +398,24 @@ public class CreatureController : MonoBehaviour
         {
             archiveManager.HandleScanCompleted();
         }
+
+        TryStartMiniGame();
     }
 
-    private void TriggerEncounterFlow()
+    private void TryStartMiniGame()
     {
-        hasTriggeredEncounter = true;
-        encounter?.RegisterEncounter();
-        OnboardingHintSystem.NotifyCreatureEncounter();
-        if (encounter != null)
+        if (hasStartedMiniGame)
         {
-            EncounterUI.ShowEncounter(encounter.Creature);
+            return;
         }
 
+        if (currentState != CreatureState.Engaged && currentState != CreatureState.HesitantNearPlayer
+            && currentState != CreatureState.CuriousApproach)
+        {
+            return;
+        }
+
+        hasStartedMiniGame = true;
         if (instinctPredictionGame != null)
         {
             if (patternMemoryMiniGame != null)
@@ -409,7 +449,8 @@ public class CreatureController : MonoBehaviour
 
         isResolvingInstinct = false;
         TransitionTo(CreatureState.HiddenWatching);
-        hasTriggeredEncounter = false;
+        hasShownEncounter = false;
+        hasStartedMiniGame = false;
         SetScanAvailable(false);
     }
 

@@ -8,6 +8,7 @@ namespace Afterworld.Systems.MiniGames
     {
         [Header("References")]
         [SerializeField] private CreatureEncounter encounter;
+        [SerializeField] private CreatureController creatureController;
 
         [Header("Timing")]
         [SerializeField, Range(0.3f, 1.5f)] private float revealInterval = 0.75f;
@@ -43,6 +44,11 @@ namespace Afterworld.Systems.MiniGames
             if (encounter == null)
             {
                 encounter = GetComponent<CreatureEncounter>();
+            }
+
+            if (creatureController == null)
+            {
+                creatureController = GetComponent<CreatureController>();
             }
         }
 
@@ -150,6 +156,7 @@ namespace Afterworld.Systems.MiniGames
                 yield return new WaitForSeconds(resultDuration);
             }
 
+            creatureController?.DisengageCalmly();
             memoryRoutine = null;
         }
 

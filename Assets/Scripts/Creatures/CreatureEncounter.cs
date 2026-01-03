@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CreatureEncounter : MonoBehaviour
@@ -66,10 +67,39 @@ public class CreatureEncounter : MonoBehaviour
         if (!database.TryGetCreature(creatureId, out CreatureData resolved))
         {
             Debug.LogWarning($"{nameof(CreatureEncounter)} on {name} could not find creature id '{creatureId}'.", this);
+            TryPickFallback(database);
             return;
         }
 
         creature = resolved;
+    }
+
+    private void TryPickFallback(CreatureDatabase creatureDatabase)
+    {
+        if (creatureDatabase == null || creatureDatabase.Creatures == null || creatureDatabase.Creatures.Count == 0)
+        {
+            return;
+        }
+
+        List<CreatureData> options = new List<CreatureData>();
+        foreach (CreatureData entry in creatureDatabase.Creatures)
+        {
+            if (entry != null)
+            {
+                options.Add(entry);
+            }
+        }
+
+        if (options.Count == 0)
+        {
+            return;
+        }
+
+        creature = options[Random.Range(0, options.Count)];
+        if (creature != null)
+        {
+            Debug.LogWarning($"{nameof(CreatureEncounter)} on {name} fell back to creature '{creature.Id}'.", this);
+        }
     }
 
     public void RegisterEncounter()

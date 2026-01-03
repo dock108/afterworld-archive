@@ -69,7 +69,12 @@ public class ThirdPersonBootstrap : MonoBehaviour
         Camera mainCamera = Camera.main;
         if (mainCamera == null)
         {
-            return;
+            GameObject cameraObject = new GameObject("Main Camera");
+            mainCamera = cameraObject.AddComponent<Camera>();
+            cameraObject.tag = "MainCamera";
+            cameraObject.AddComponent<AudioListener>();
+            cameraObject.transform.position = followTarget.position + cameraOffset;
+            cameraObject.transform.LookAt(followTarget);
         }
 
         GetOrAddComponent<CinemachineBrain>(mainCamera.gameObject);
