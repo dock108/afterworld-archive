@@ -116,9 +116,7 @@ public class ScanToastUI : MonoBehaviour
         canvas.sortingOrder = 100;
 
         CanvasScaler scaler = canvasObject.GetComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1920, 1080);
-        scaler.matchWidthOrHeight = 0.5f;
+        RuntimeUiScaler.Apply(scaler);
 
         GameObject toastObject = new GameObject("Scan Toast", typeof(RectTransform), typeof(CanvasGroup), typeof(Image));
         toastObject.transform.SetParent(canvasObject.transform, false);

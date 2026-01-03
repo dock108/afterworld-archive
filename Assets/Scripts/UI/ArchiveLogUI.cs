@@ -275,9 +275,7 @@ public class ArchiveLogUI : MonoBehaviour
         canvas.sortingOrder = 95;
 
         CanvasScaler scaler = canvasObject.GetComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1920, 1080);
-        scaler.matchWidthOrHeight = 0.5f;
+        RuntimeUiScaler.Apply(scaler);
 
         GameObject panelObject = new GameObject("Archive Log Panel", typeof(RectTransform), typeof(CanvasGroup), typeof(Image));
         panelObject.transform.SetParent(canvasObject.transform, false);

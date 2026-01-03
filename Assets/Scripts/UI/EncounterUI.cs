@@ -134,9 +134,7 @@ public class EncounterUI : MonoBehaviour
         canvas.sortingOrder = 98;
 
         CanvasScaler scaler = canvasObject.GetComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1920, 1080);
-        scaler.matchWidthOrHeight = 0.5f;
+        RuntimeUiScaler.Apply(scaler);
 
         GameObject panelObject = new GameObject("Encounter Panel", typeof(RectTransform), typeof(CanvasGroup), typeof(Image));
         panelObject.transform.SetParent(canvasObject.transform, false);

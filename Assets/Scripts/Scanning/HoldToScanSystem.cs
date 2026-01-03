@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
@@ -9,6 +10,9 @@ public class HoldToScanSystem : MonoBehaviour
 {
     [Header("Scan Input")]
     [SerializeField] private string inputButton = "Fire1";
+    [SerializeField] private bool allowMouseInput = true;
+    [SerializeField] private bool allowTouchInput = true;
+    [SerializeField] private bool ignoreUiTouches = true;
 
     [Header("Scan Timing")]
     [SerializeField, Range(1.5f, 2f)] private float scanDurationSeconds = 1.8f;
@@ -57,7 +61,7 @@ public class HoldToScanSystem : MonoBehaviour
 
     private void Update()
     {
-        if (!Input.GetButton(inputButton))
+        if (!IsScanInputHeld())
         {
             CancelScan();
             return;
@@ -84,6 +88,47 @@ public class HoldToScanSystem : MonoBehaviour
         {
             CompleteScan();
         }
+    }
+
+    private bool IsScanInputHeld()
+    {
+        if (!string.IsNullOrEmpty(inputButton) && Input.GetButton(inputButton))
+        {
+            return true;
+        }
+
+        if (allowMouseInput && Input.GetMouseButton(0))
+        {
+            return true;
+        }
+
+        return allowTouchInput && IsTouchHeld();
+    }
+
+    private bool IsTouchHeld()
+    {
+        if (Input.touchCount == 0)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < Input.touchCount; i++)
+        {
+            Touch touch = Input.GetTouch(i);
+            if (touch.phase == TouchPhase.Canceled || touch.phase == TouchPhase.Ended)
+            {
+                continue;
+            }
+
+            if (ignoreUiTouches && EventSystem.current != null && EventSystem.current.IsPointerOverGameObject(touch.fingerId))
+            {
+                continue;
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     private void TryBeginScan()
