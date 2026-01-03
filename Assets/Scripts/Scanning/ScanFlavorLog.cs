@@ -5,7 +5,12 @@ using UnityEngine;
 /// </summary>
 public class ScanFlavorLog : MonoBehaviour
 {
-    [SerializeField, TextArea(2, 4)] private string[] messages;
+    [SerializeField, TextArea(2, 4)] private string[] messages =
+    {
+        "Scan logged. The universe remains larger than my optimism.",
+        "Scan complete. A small miracle with excellent documentation.",
+        "Scan saved. Wonder persists; efficiency begrudgingly approved."
+    };
     [SerializeField] private bool randomize = true;
 
     private ScannableObject scannable;
