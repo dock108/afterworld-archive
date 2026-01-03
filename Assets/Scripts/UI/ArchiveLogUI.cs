@@ -52,6 +52,23 @@ public class ArchiveLogUI : MonoBehaviour
         logObject.AddComponent<ArchiveLogUI>();
     }
 
+    public static void AppendEntry(string message)
+    {
+        if (string.IsNullOrWhiteSpace(message))
+        {
+            return;
+        }
+
+        ArchiveLogUI logUi = FindObjectOfType<ArchiveLogUI>();
+        if (logUi == null)
+        {
+            GameObject logObject = new GameObject("Archive Log UI");
+            logUi = logObject.AddComponent<ArchiveLogUI>();
+        }
+
+        logUi.AppendMessage(message);
+    }
+
     private void Awake()
     {
         if (canvasGroup == null || logText == null)
@@ -158,6 +175,17 @@ public class ArchiveLogUI : MonoBehaviour
         {
             logText.text = string.Join("\n", messages);
         }
+    }
+
+    private void AppendMessage(string message)
+    {
+        if (messageRoutine != null)
+        {
+            StopCoroutine(messageRoutine);
+            messageRoutine = null;
+        }
+
+        AddMessage(message);
     }
 
     private void ConfigureCanvasGroup()
