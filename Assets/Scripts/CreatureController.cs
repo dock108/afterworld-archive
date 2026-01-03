@@ -348,6 +348,11 @@ public class CreatureController : MonoBehaviour
         {
             scanTarget.enabled = available;
         }
+
+        if (available && !hasBeenScanned)
+        {
+            OnboardingHintSystem.NotifyScanOpportunity();
+        }
     }
 
     private void HandleScanComplete()
@@ -365,6 +370,7 @@ public class CreatureController : MonoBehaviour
     {
         hasTriggeredEncounter = true;
         encounter?.RegisterEncounter();
+        OnboardingHintSystem.NotifyCreatureEncounter();
         if (encounter != null)
         {
             EncounterUI.ShowEncounter(encounter.Creature);
