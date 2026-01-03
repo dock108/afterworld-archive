@@ -23,6 +23,7 @@ public class CreatureController : MonoBehaviour
     [SerializeField] private ScanTarget scanTarget;
     [SerializeField] private ScannableObject scannable;
     [SerializeField] private ArchiveManager archiveManager;
+    [SerializeField] private CreatureEncounter encounter;
 
     [Header("Distances")]
     [SerializeField] private float watchRadius = 8f;
@@ -58,6 +59,11 @@ public class CreatureController : MonoBehaviour
         if (scannable == null)
         {
             scannable = GetComponentInChildren<ScannableObject>(true);
+        }
+
+        if (encounter == null)
+        {
+            encounter = GetComponent<CreatureEncounter>();
         }
 
         if (archiveManager == null)
@@ -316,6 +322,7 @@ public class CreatureController : MonoBehaviour
     {
         hasBeenScanned = true;
         SetScanAvailable(true);
+        encounter?.RegisterEncounter();
         if (archiveManager != null)
         {
             archiveManager.HandleScanCompleted();
