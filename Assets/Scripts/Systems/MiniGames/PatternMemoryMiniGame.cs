@@ -137,6 +137,7 @@ namespace Afterworld.Systems.MiniGames
             if (success)
             {
                 InstinctPredictionUI.ShowResult(successTitle, successBody, resultDuration);
+                encounter?.RegisterMiniGameSuccess();
             }
             else
             {

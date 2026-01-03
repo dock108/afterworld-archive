@@ -2,6 +2,11 @@ using UnityEngine;
 
 public class CreatureEncounter : MonoBehaviour
 {
+    [Header("Progress")]
+    [SerializeField] private Animator[] dioramaAnimators;
+    [SerializeField] private string partialUnderstandingEntry = "Archive entry unlocked: {0} (partial understanding).";
+    [SerializeField] private string fullUnderstandingEntry = "Archive entry completed: {0} (fully understood).";
+
     [SerializeField] private CreatureDatabase database;
     [SerializeField] private string creatureId;
     [SerializeField] private CreatureData creature;
@@ -16,6 +21,7 @@ public class CreatureEncounter : MonoBehaviour
     private void Awake()
     {
         ResolveCreature();
+        ApplyDioramaState();
     }
 
     public void ResolveCreature()
@@ -72,8 +78,78 @@ public class CreatureEncounter : MonoBehaviour
         }
     }
 
+    public void RegisterMiniGameSuccess()
+    {
+        if (creature == null)
+        {
+            ResolveCreature();
+        }
+
+        if (creature == null)
+        {
+            return;
+        }
+
+        CreatureUnderstandingState previousState = CreatureArchiveProgress.GetUnderstanding(creature.Id);
+        CreatureUnderstandingState newState = CreatureArchiveProgress.AdvanceUnderstanding(creature.Id);
+
+        ApplyDioramaState(newState);
+        AppendArchiveEntry(previousState, newState);
+    }
+
     public void MarkElusive()
     {
         isElusive = true;
+    }
+
+    private void AppendArchiveEntry(CreatureUnderstandingState previousState, CreatureUnderstandingState newState)
+    {
+        if (newState == previousState || creature == null)
+        {
+            return;
+        }
+
+        string entry = null;
+        switch (newState)
+        {
+            case CreatureUnderstandingState.Partial:
+                entry = partialUnderstandingEntry;
+                break;
+            case CreatureUnderstandingState.Understood:
+                entry = fullUnderstandingEntry;
+                break;
+        }
+
+        if (!string.IsNullOrWhiteSpace(entry))
+        {
+            ArchiveLogUI.AppendEntry(string.Format(entry, creature.DisplayName));
+        }
+    }
+
+    private void ApplyDioramaState()
+    {
+        if (creature == null)
+        {
+            return;
+        }
+
+        ApplyDioramaState(CreatureArchiveProgress.GetUnderstanding(creature.Id));
+    }
+
+    private void ApplyDioramaState(CreatureUnderstandingState state)
+    {
+        if (dioramaAnimators == null || dioramaAnimators.Length == 0)
+        {
+            return;
+        }
+
+        bool enableAnimation = state != CreatureUnderstandingState.Unknown;
+        foreach (Animator animator in dioramaAnimators)
+        {
+            if (animator != null)
+            {
+                animator.enabled = enableAnimation;
+            }
+        }
     }
 }

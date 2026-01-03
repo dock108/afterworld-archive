@@ -27,6 +27,7 @@ public class InstinctPredictionGame : MonoBehaviour
     [SerializeField] private string failureBody = "The creature disengages calmly.";
 
     private CreatureController controller;
+    private CreatureEncounter encounter;
     private Coroutine predictionRoutine;
     private CreatureInstinct targetInstinct;
     private CreatureInstinct? predictedInstinct;
@@ -35,6 +36,7 @@ public class InstinctPredictionGame : MonoBehaviour
     private void Awake()
     {
         controller = GetComponent<CreatureController>();
+        encounter = GetComponent<CreatureEncounter>();
     }
 
     public void BeginPrediction(CreatureData creature)
@@ -104,6 +106,7 @@ public class InstinctPredictionGame : MonoBehaviour
                 ? creature.DeepDiveNotes
                 : successBodyFallback;
             InstinctPredictionUI.ShowResult(successTitle, details, resultDuration);
+            encounter?.RegisterMiniGameSuccess();
         }
         else
         {
