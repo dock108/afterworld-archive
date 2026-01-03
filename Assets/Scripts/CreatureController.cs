@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -24,6 +25,7 @@ public class CreatureController : MonoBehaviour
     [SerializeField] private ScannableObject scannable;
     [SerializeField] private ArchiveManager archiveManager;
     [SerializeField] private CreatureEncounter encounter;
+    [SerializeField] private InstinctPredictionGame instinctPredictionGame;
 
     [Header("Distances")]
     [SerializeField] private float watchRadius = 8f;
@@ -47,6 +49,8 @@ public class CreatureController : MonoBehaviour
     private float calmTimer;
     private bool hasBeenScanned;
     private bool hasTriggeredEncounter;
+    private bool isResolvingInstinct;
+    private Coroutine instinctRoutine;
 
     private void Awake()
     {
@@ -65,6 +69,16 @@ public class CreatureController : MonoBehaviour
         if (encounter == null)
         {
             encounter = GetComponent<CreatureEncounter>();
+        }
+
+        if (instinctPredictionGame == null)
+        {
+            instinctPredictionGame = GetComponent<InstinctPredictionGame>();
+        }
+
+        if (instinctPredictionGame == null)
+        {
+            instinctPredictionGame = gameObject.AddComponent<InstinctPredictionGame>();
         }
 
         if (archiveManager == null)
@@ -111,6 +125,11 @@ public class CreatureController : MonoBehaviour
     private void Update()
     {
         if (player == null)
+        {
+            return;
+        }
+
+        if (isResolvingInstinct)
         {
             return;
         }
@@ -343,5 +362,97 @@ public class CreatureController : MonoBehaviour
         {
             EncounterUI.ShowEncounter(encounter.Creature);
         }
+
+        if (instinctPredictionGame != null)
+        {
+            instinctPredictionGame.BeginPrediction(encounter != null ? encounter.Creature : null);
+        }
+    }
+
+    public void PlayInstinctBehavior(CreatureInstinct instinct, float duration)
+    {
+        if (instinctRoutine != null)
+        {
+            StopCoroutine(instinctRoutine);
+        }
+
+        instinctRoutine = StartCoroutine(InstinctBehaviorRoutine(instinct, duration));
+    }
+
+    public void DisengageCalmly()
+    {
+        if (instinctRoutine != null)
+        {
+            StopCoroutine(instinctRoutine);
+            instinctRoutine = null;
+        }
+
+        isResolvingInstinct = false;
+        TransitionTo(CreatureState.HiddenWatching);
+        hasTriggeredEncounter = false;
+        SetScanAvailable(false);
+    }
+
+    private IEnumerator InstinctBehaviorRoutine(CreatureInstinct instinct, float duration)
+    {
+        isResolvingInstinct = true;
+
+        if (agent.isOnNavMesh)
+        {
+            agent.isStopped = false;
+        }
+
+        switch (instinct)
+        {
+            case CreatureInstinct.Flee:
+                MoveAwayFromPlayer();
+                break;
+            case CreatureInstinct.Freeze:
+                if (agent.isOnNavMesh)
+                {
+                    agent.isStopped = true;
+                }
+                break;
+            case CreatureInstinct.Climb:
+                MoveToPoint(peekPoint != null ? peekPoint : hidePoint);
+                break;
+            case CreatureInstinct.Investigate:
+                if (agent.isOnNavMesh && player != null)
+                {
+                    agent.stoppingDistance = hesitantRadius;
+                    agent.SetDestination(player.position);
+                }
+                break;
+        }
+
+        if (duration > 0f)
+        {
+            yield return new WaitForSeconds(duration);
+        }
+
+        isResolvingInstinct = false;
+        if (agent.isOnNavMesh)
+        {
+            agent.isStopped = true;
+        }
+        instinctRoutine = null;
+    }
+
+    private void MoveAwayFromPlayer()
+    {
+        if (player == null || !agent.isOnNavMesh)
+        {
+            return;
+        }
+
+        Vector3 awayDirection = (transform.position - player.position).normalized;
+        if (awayDirection.sqrMagnitude < 0.01f)
+        {
+            awayDirection = -player.forward;
+        }
+
+        Vector3 retreatTarget = transform.position + awayDirection * retreatRadius;
+        agent.stoppingDistance = 0f;
+        agent.SetDestination(retreatTarget);
     }
 }
