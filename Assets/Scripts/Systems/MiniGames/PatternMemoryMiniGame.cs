@@ -18,6 +18,7 @@ namespace Afterworld.Systems.MiniGames
         [SerializeField, Range(2, 8)] private int commonSteps = 3;
         [SerializeField, Range(2, 8)] private int uncommonSteps = 4;
         [SerializeField, Range(2, 8)] private int rareSteps = 5;
+        [SerializeField, Range(2, 10)] private int mythicSteps = 6;
 
         [Header("Options")]
         [SerializeField] private string[] optionLabels = { "Signal 1", "Signal 2", "Signal 3", "Signal 4" };
@@ -159,6 +160,8 @@ namespace Afterworld.Systems.MiniGames
                     return Mathf.Max(1, uncommonSteps);
                 case CreatureRarity.Rare:
                     return Mathf.Max(1, rareSteps);
+                case CreatureRarity.Mythic:
+                    return Mathf.Max(1, mythicSteps);
                 default:
                     return Mathf.Max(1, commonSteps);
             }
