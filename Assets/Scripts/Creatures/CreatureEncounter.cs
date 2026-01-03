@@ -5,8 +5,10 @@ public class CreatureEncounter : MonoBehaviour
     [SerializeField] private CreatureDatabase database;
     [SerializeField] private string creatureId;
     [SerializeField] private CreatureData creature;
+    [SerializeField] private bool isElusive;
 
     public CreatureData Creature => creature;
+    public bool IsElusive => isElusive;
 
     private void Awake()
     {
@@ -51,5 +53,10 @@ public class CreatureEncounter : MonoBehaviour
         {
             Debug.Log($"Encountered {creature.DisplayName} ({creature.Rarity}).", this);
         }
+    }
+
+    public void MarkElusive()
+    {
+        isElusive = true;
     }
 }

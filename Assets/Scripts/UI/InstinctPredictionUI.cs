@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -17,6 +18,8 @@ public class InstinctPredictionUI : MonoBehaviour
     private Text[] buttonLabels;
     private CreatureInstinct[] currentInstincts;
     private Action<CreatureInstinct> selectionHandler;
+    private Action<int> memorySelectionHandler;
+    private Coroutine sequenceRoutine;
     private bool acceptInput;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -51,6 +54,7 @@ public class InstinctPredictionUI : MonoBehaviour
             return;
         }
 
+        ui.StopSequenceReveal();
         ui.SetButtonsVisible(false);
         ui.SetVisible(false);
     }
@@ -66,6 +70,26 @@ public class InstinctPredictionUI : MonoBehaviour
         ui.ShowResultInternal(title, body, duration);
     }
 
+    public static InstinctPredictionUI ShowMemorySequence(
+        string title,
+        string observeBody,
+        string repeatBody,
+        string[] sequence,
+        string[] optionLabels,
+        float revealInterval,
+        Action onSequenceComplete,
+        Action<int> onSelect)
+    {
+        InstinctPredictionUI ui = FindObjectOfType<InstinctPredictionUI>();
+        if (ui == null)
+        {
+            return null;
+        }
+
+        ui.ShowMemorySequenceInternal(title, observeBody, repeatBody, sequence, optionLabels, revealInterval, onSequenceComplete, onSelect);
+        return ui;
+    }
+
     private void Awake()
     {
         if (canvasGroup == null || titleText == null || bodyText == null || buttonRow == null)
@@ -78,26 +102,19 @@ public class InstinctPredictionUI : MonoBehaviour
 
     private void Update()
     {
-        if (!acceptInput || currentInstincts == null)
+        if (!acceptInput || buttons == null)
         {
             return;
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        int maxChecks = Mathf.Min(buttons.Length, 9);
+        for (int i = 0; i < maxChecks; i++)
         {
-            SelectInstinct(0);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            SelectInstinct(1);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            SelectInstinct(2);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha4))
-        {
-            SelectInstinct(3);
+            if (Input.GetKeyDown((KeyCode)((int)KeyCode.Alpha1 + i)))
+            {
+                SelectOption(i);
+                break;
+            }
         }
     }
 
@@ -108,9 +125,11 @@ public class InstinctPredictionUI : MonoBehaviour
             return;
         }
 
+        StopSequenceReveal();
         EnsureButtons(instincts.Length);
         currentInstincts = instincts;
         selectionHandler = onSelect;
+        memorySelectionHandler = null;
         acceptInput = true;
 
         if (titleText != null)
@@ -137,11 +156,56 @@ public class InstinctPredictionUI : MonoBehaviour
         SetVisible(true);
     }
 
+    private void ShowMemorySequenceInternal(
+        string title,
+        string observeBody,
+        string repeatBody,
+        string[] sequence,
+        string[] optionLabels,
+        float revealInterval,
+        Action onSequenceComplete,
+        Action<int> onSelect)
+    {
+        if (sequence == null || sequence.Length == 0 || optionLabels == null || optionLabels.Length == 0)
+        {
+            return;
+        }
+
+        StopSequenceReveal();
+        EnsureButtons(optionLabels.Length);
+        currentInstincts = null;
+        selectionHandler = null;
+        memorySelectionHandler = onSelect;
+        acceptInput = false;
+
+        if (titleText != null)
+        {
+            titleText.text = title;
+        }
+
+        for (int i = 0; i < buttons.Length; i++)
+        {
+            bool active = i < optionLabels.Length;
+            buttons[i].gameObject.SetActive(active);
+            if (active && buttonLabels != null && buttonLabels.Length > i)
+            {
+                buttonLabels[i].text = optionLabels[i];
+            }
+        }
+
+        SetButtonsVisible(false);
+        SetVisible(true);
+
+        sequenceRoutine = StartCoroutine(RevealSequenceRoutine(observeBody, repeatBody, sequence, revealInterval, onSequenceComplete));
+    }
+
     private void ShowResultInternal(string title, string body, float duration)
     {
         acceptInput = false;
         currentInstincts = null;
         selectionHandler = null;
+        memorySelectionHandler = null;
+        StopSequenceReveal();
 
         if (titleText != null)
         {
@@ -168,15 +232,26 @@ public class InstinctPredictionUI : MonoBehaviour
         SetVisible(false);
     }
 
-    private void SelectInstinct(int index)
+    private void SelectOption(int index)
     {
-        if (currentInstincts == null || index < 0 || index >= currentInstincts.Length)
+        if (!acceptInput || index < 0 || buttons == null || index >= buttons.Length)
         {
             return;
         }
 
-        acceptInput = false;
-        selectionHandler?.Invoke(currentInstincts[index]);
+        if (currentInstincts != null)
+        {
+            if (index >= currentInstincts.Length)
+            {
+                return;
+            }
+
+            acceptInput = false;
+            selectionHandler?.Invoke(currentInstincts[index]);
+            return;
+        }
+
+        memorySelectionHandler?.Invoke(index);
     }
 
     private void EnsureButtons(int count)
@@ -202,7 +277,7 @@ public class InstinctPredictionUI : MonoBehaviour
 
             Button button = buttonObject.GetComponent<Button>();
             int capturedIndex = i;
-            button.onClick.AddListener(() => SelectInstinct(capturedIndex));
+            button.onClick.AddListener(() => SelectOption(capturedIndex));
 
             GameObject labelObject = new GameObject("Label", typeof(RectTransform), typeof(Text));
             labelObject.transform.SetParent(buttonObject.transform, false);
@@ -248,6 +323,49 @@ public class InstinctPredictionUI : MonoBehaviour
         canvasGroup.alpha = visible ? 1f : 0f;
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
+    }
+
+    private IEnumerator RevealSequenceRoutine(
+        string observeBody,
+        string repeatBody,
+        string[] sequence,
+        float revealInterval,
+        Action onSequenceComplete)
+    {
+        if (bodyText != null)
+        {
+            bodyText.text = observeBody;
+        }
+
+        float interval = Mathf.Max(0.1f, revealInterval);
+        for (int i = 0; i < sequence.Length; i++)
+        {
+            if (bodyText != null)
+            {
+                bodyText.text = $"{observeBody}\n\n{sequence[i]}";
+            }
+
+            yield return new WaitForSeconds(interval);
+        }
+
+        if (bodyText != null)
+        {
+            bodyText.text = repeatBody;
+        }
+
+        SetButtonsVisible(true);
+        acceptInput = true;
+        sequenceRoutine = null;
+        onSequenceComplete?.Invoke();
+    }
+
+    private void StopSequenceReveal()
+    {
+        if (sequenceRoutine != null)
+        {
+            StopCoroutine(sequenceRoutine);
+            sequenceRoutine = null;
+        }
     }
 
     private void BuildRuntimeUi()
