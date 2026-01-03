@@ -79,6 +79,8 @@ public class CreatureSpawnTable : ScriptableObject
             return false;
         }
 
+        List<SpawnEntry> candidates = new List<SpawnEntry>();
+        List<int> weights = new List<int>();
         int totalWeight = 0;
         for (int i = 0; i < entries.Count; i++)
         {
@@ -88,12 +90,20 @@ public class CreatureSpawnTable : ScriptableObject
                 continue;
             }
 
-            int entryWeight = Mathf.Max(0, entry.Weight) * GetRarityWeight(entry.Creature.Rarity);
+            CreatureData entryCreature = entry.Creature;
+            if (entryCreature == null || !CreatureElusiveTracker.CanSpawn(entryCreature.Id))
+            {
+                continue;
+            }
+
+            int entryWeight = Mathf.Max(0, entry.Weight) * GetRarityWeight(entryCreature.Rarity);
             if (entryWeight <= 0)
             {
                 continue;
             }
 
+            candidates.Add(entry);
+            weights.Add(entryWeight);
             totalWeight += entryWeight;
         }
 
@@ -103,25 +113,19 @@ public class CreatureSpawnTable : ScriptableObject
         }
 
         int roll = Random.Range(0, totalWeight);
-        for (int i = 0; i < entries.Count; i++)
+        for (int i = 0; i < candidates.Count; i++)
         {
-            SpawnEntry entry = entries[i];
-            if (entry == null || !entry.Matches(conditions))
-            {
-                continue;
-            }
-
-            int entryWeight = Mathf.Max(0, entry.Weight) * GetRarityWeight(entry.Creature.Rarity);
-            if (entryWeight <= 0)
-            {
-                continue;
-            }
-
-            roll -= entryWeight;
+            roll -= weights[i];
             if (roll < 0)
             {
-                creature = entry.Creature;
-                return creature != null;
+                creature = candidates[i].Creature;
+                if (creature != null)
+                {
+                    CreatureElusiveTracker.ClearElusive(creature.Id);
+                    return true;
+                }
+
+                return false;
             }
         }
 

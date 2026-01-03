@@ -15,6 +15,13 @@ public class CreatureEncounter : MonoBehaviour
     [SerializeField] private bool rollFromSpawnTableOnAwake = true;
     [SerializeField] private bool isElusive;
 
+    [Header("Elusive Return")]
+    [SerializeField, Min(0f)] private float elusiveCooldownMin = 20f;
+    [SerializeField, Min(0f)] private float elusiveCooldownMax = 45f;
+    [SerializeField, Range(0f, 1f)] private float elusiveReturnChanceMin = 0.35f;
+    [SerializeField, Range(0f, 1f)] private float elusiveReturnChanceMax = 0.85f;
+    [SerializeField, Min(0f)] private float elusiveReturnChanceRamp = 60f;
+
     public CreatureData Creature => creature;
     public bool IsElusive => isElusive;
 
@@ -95,11 +102,36 @@ public class CreatureEncounter : MonoBehaviour
 
         ApplyDioramaState(newState);
         AppendArchiveEntry(previousState, newState);
+
+        isElusive = false;
+        CreatureElusiveTracker.ClearElusive(creature.Id);
     }
 
     public void MarkElusive()
     {
         isElusive = true;
+        if (creature == null)
+        {
+            ResolveCreature();
+        }
+
+        if (creature == null)
+        {
+            return;
+        }
+
+        float cooldownMin = Mathf.Max(0f, elusiveCooldownMin);
+        float cooldownMax = Mathf.Max(cooldownMin, elusiveCooldownMax);
+        float chanceMin = Mathf.Clamp01(elusiveReturnChanceMin);
+        float chanceMax = Mathf.Clamp(elusiveReturnChanceMax, chanceMin, 1f);
+
+        CreatureElusiveTracker.MarkElusive(
+            creature.Id,
+            cooldownMin,
+            cooldownMax,
+            chanceMin,
+            chanceMax,
+            elusiveReturnChanceRamp);
     }
 
     private void AppendArchiveEntry(CreatureUnderstandingState previousState, CreatureUnderstandingState newState)

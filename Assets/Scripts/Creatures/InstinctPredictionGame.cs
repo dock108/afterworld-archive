@@ -111,6 +111,7 @@ public class InstinctPredictionGame : MonoBehaviour
         else
         {
             InstinctPredictionUI.ShowResult(failureTitle, failureBody, resultDuration);
+            encounter?.MarkElusive();
             controller?.DisengageCalmly();
         }
 
