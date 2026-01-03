@@ -13,7 +13,7 @@ public class CreatureController : MonoBehaviour
         Peeking,
         CuriousApproach,
         HesitantNearPlayer,
-        CalmNearPlayer
+        Engaged
     }
 
     [Header("References")]
@@ -46,6 +46,7 @@ public class CreatureController : MonoBehaviour
     private bool isIdling;
     private float calmTimer;
     private bool hasBeenScanned;
+    private bool hasTriggeredEncounter;
 
     private void Awake()
     {
@@ -130,8 +131,8 @@ public class CreatureController : MonoBehaviour
             case CreatureState.HesitantNearPlayer:
                 HandleHesitantNearPlayer(distanceToPlayer);
                 break;
-            case CreatureState.CalmNearPlayer:
-                HandleCalmNearPlayer(distanceToPlayer);
+            case CreatureState.Engaged:
+                HandleEngaged(distanceToPlayer);
                 break;
         }
     }
@@ -214,7 +215,7 @@ public class CreatureController : MonoBehaviour
             calmTimer += Time.deltaTime;
             if (calmTimer >= calmDuration)
             {
-                TransitionTo(CreatureState.CalmNearPlayer);
+                TransitionTo(CreatureState.Engaged);
             }
         }
         else
@@ -223,7 +224,7 @@ public class CreatureController : MonoBehaviour
         }
     }
 
-    private void HandleCalmNearPlayer(float distanceToPlayer)
+    private void HandleEngaged(float distanceToPlayer)
     {
         agent.isStopped = true;
         isIdling = true;
@@ -306,7 +307,12 @@ public class CreatureController : MonoBehaviour
         calmTimer = 0f;
         if (!hasBeenScanned)
         {
-            SetScanAvailable(nextState == CreatureState.CalmNearPlayer);
+            SetScanAvailable(nextState == CreatureState.Engaged);
+        }
+
+        if (nextState == CreatureState.Engaged && !hasTriggeredEncounter)
+        {
+            TriggerEncounterFlow();
         }
     }
 
@@ -326,6 +332,16 @@ public class CreatureController : MonoBehaviour
         if (archiveManager != null)
         {
             archiveManager.HandleScanCompleted();
+        }
+    }
+
+    private void TriggerEncounterFlow()
+    {
+        hasTriggeredEncounter = true;
+        encounter?.RegisterEncounter();
+        if (encounter != null)
+        {
+            EncounterUI.ShowEncounter(encounter.Creature);
         }
     }
 }
