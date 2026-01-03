@@ -13,6 +13,8 @@ public class ArchiveManager : MonoBehaviour
         PartialOnline
     }
 
+    public event System.Action<ArchiveState> OnStateChanged;
+
     [Header("State")]
     [SerializeField] private ArchiveState startingState = ArchiveState.Offline;
 
@@ -42,6 +44,8 @@ public class ArchiveManager : MonoBehaviour
     private bool hasActivated;
     private Coroutine transitionRoutine;
     private Quaternion doorClosedRotation;
+
+    public ArchiveState CurrentState => currentState;
 
     private void Awake()
     {
@@ -105,6 +109,7 @@ public class ArchiveManager : MonoBehaviour
     {
         currentState = newState;
         ApplyState(newState, false);
+        OnStateChanged?.Invoke(newState);
     }
 
     private void ApplyState(ArchiveState state, bool immediate)

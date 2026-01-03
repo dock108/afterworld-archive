@@ -1,0 +1,224 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+/// <summary>
+/// Displays lightweight system boot logs based on archive state changes.
+/// </summary>
+public class ArchiveLogUI : MonoBehaviour
+{
+    [SerializeField] private ArchiveManager archiveManager;
+    [SerializeField] private CanvasGroup canvasGroup;
+    [SerializeField] private Text logText;
+    [SerializeField] private int maxLines = 6;
+    [SerializeField] private float messageStepDelay = 0.25f;
+
+    [Header("Messages")]
+    [SerializeField]
+    private string[] offlineMessages =
+    {
+        "Archive offline.",
+        "Awaiting activation signal."
+    };
+
+    [SerializeField]
+    private string[] flickerMessages =
+    {
+        "Power surge detected...",
+        "Stabilizing archive conduits...",
+        "Boot sequence initiated."
+    };
+
+    [SerializeField]
+    private string[] partialOnlineMessages =
+    {
+        "Core systems online.",
+        "Archive door unlocked."
+    };
+
+    private readonly List<string> messages = new List<string>();
+    private Coroutine messageRoutine;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+    private static void EnsureInstance()
+    {
+        if (FindObjectOfType<ArchiveLogUI>() != null)
+        {
+            return;
+        }
+
+        GameObject logObject = new GameObject("Archive Log UI");
+        logObject.AddComponent<ArchiveLogUI>();
+    }
+
+    private void Awake()
+    {
+        if (canvasGroup == null || logText == null)
+        {
+            BuildRuntimeUi();
+        }
+
+        ConfigureCanvasGroup();
+    }
+
+    private void OnEnable()
+    {
+        if (archiveManager == null)
+        {
+            archiveManager = FindObjectOfType<ArchiveManager>();
+        }
+
+        if (archiveManager != null)
+        {
+            archiveManager.OnStateChanged += HandleStateChanged;
+            AppendMessagesForState(archiveManager.CurrentState, true);
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (archiveManager != null)
+        {
+            archiveManager.OnStateChanged -= HandleStateChanged;
+        }
+    }
+
+    private void HandleStateChanged(ArchiveManager.ArchiveState state)
+    {
+        AppendMessagesForState(state, false);
+    }
+
+    private void AppendMessagesForState(ArchiveManager.ArchiveState state, bool immediate)
+    {
+        if (messageRoutine != null)
+        {
+            StopCoroutine(messageRoutine);
+        }
+
+        string[] lines = GetMessagesForState(state);
+        if (lines == null || lines.Length == 0)
+        {
+            return;
+        }
+
+        if (immediate || messageStepDelay <= 0f)
+        {
+            foreach (string line in lines)
+            {
+                AddMessage(line);
+            }
+
+            return;
+        }
+
+        messageRoutine = StartCoroutine(QueueMessages(lines));
+    }
+
+    private IEnumerator QueueMessages(string[] lines)
+    {
+        foreach (string line in lines)
+        {
+            AddMessage(line);
+            yield return new WaitForSeconds(messageStepDelay);
+        }
+
+        messageRoutine = null;
+    }
+
+    private string[] GetMessagesForState(ArchiveManager.ArchiveState state)
+    {
+        switch (state)
+        {
+            case ArchiveManager.ArchiveState.Offline:
+                return offlineMessages;
+            case ArchiveManager.ArchiveState.Flicker:
+                return flickerMessages;
+            case ArchiveManager.ArchiveState.PartialOnline:
+                return partialOnlineMessages;
+            default:
+                return null;
+        }
+    }
+
+    private void AddMessage(string message)
+    {
+        if (string.IsNullOrWhiteSpace(message))
+        {
+            return;
+        }
+
+        messages.Add(message);
+        while (messages.Count > maxLines)
+        {
+            messages.RemoveAt(0);
+        }
+
+        if (logText != null)
+        {
+            logText.text = string.Join("\n", messages);
+        }
+    }
+
+    private void ConfigureCanvasGroup()
+    {
+        if (canvasGroup == null)
+        {
+            return;
+        }
+
+        canvasGroup.alpha = 1f;
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
+    }
+
+    private void BuildRuntimeUi()
+    {
+        GameObject canvasObject = new GameObject("Archive Log Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+        canvasObject.transform.SetParent(transform, false);
+
+        Canvas canvas = canvasObject.GetComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = 95;
+
+        CanvasScaler scaler = canvasObject.GetComponent<CanvasScaler>();
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.referenceResolution = new Vector2(1920, 1080);
+        scaler.matchWidthOrHeight = 0.5f;
+
+        GameObject panelObject = new GameObject("Archive Log Panel", typeof(RectTransform), typeof(CanvasGroup), typeof(Image));
+        panelObject.transform.SetParent(canvasObject.transform, false);
+
+        RectTransform panelRect = panelObject.GetComponent<RectTransform>();
+        panelRect.anchorMin = new Vector2(0f, 1f);
+        panelRect.anchorMax = new Vector2(0f, 1f);
+        panelRect.pivot = new Vector2(0f, 1f);
+        panelRect.anchoredPosition = new Vector2(32f, -32f);
+        panelRect.sizeDelta = new Vector2(420f, 160f);
+
+        Image panelImage = panelObject.GetComponent<Image>();
+        panelImage.color = new Color(0f, 0f, 0f, 0.55f);
+        panelImage.raycastTarget = false;
+
+        GameObject textObject = new GameObject("Log Text", typeof(RectTransform), typeof(Text));
+        textObject.transform.SetParent(panelObject.transform, false);
+
+        RectTransform textRect = textObject.GetComponent<RectTransform>();
+        textRect.anchorMin = Vector2.zero;
+        textRect.anchorMax = Vector2.one;
+        textRect.offsetMin = new Vector2(16f, 12f);
+        textRect.offsetMax = new Vector2(-16f, -12f);
+
+        logText = textObject.GetComponent<Text>();
+        logText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+        logText.fontSize = 18;
+        logText.alignment = TextAnchor.UpperLeft;
+        logText.color = new Color(0.68f, 0.9f, 1f, 0.95f);
+        logText.horizontalOverflow = HorizontalWrapMode.Wrap;
+        logText.verticalOverflow = VerticalWrapMode.Truncate;
+        logText.raycastTarget = false;
+        logText.text = string.Empty;
+
+        canvasGroup = panelObject.GetComponent<CanvasGroup>();
+    }
+}
