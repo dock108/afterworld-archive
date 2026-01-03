@@ -380,9 +380,7 @@ public class InstinctPredictionUI : MonoBehaviour
         canvas.sortingOrder = 99;
 
         CanvasScaler scaler = canvasObject.GetComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1920, 1080);
-        scaler.matchWidthOrHeight = 0.5f;
+        RuntimeUiScaler.Apply(scaler);
 
         GameObject panelObject = new GameObject("Instinct Panel", typeof(RectTransform), typeof(CanvasGroup), typeof(Image));
         panelObject.transform.SetParent(canvasObject.transform, false);
