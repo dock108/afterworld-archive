@@ -112,7 +112,6 @@ public class InstinctPredictionGame : MonoBehaviour
         {
             InstinctPredictionUI.ShowResult(failureTitle, failureBody, resultDuration);
             encounter?.MarkElusive();
-            controller?.DisengageCalmly();
         }
 
         if (resultDuration > 0f)
@@ -120,6 +119,7 @@ public class InstinctPredictionGame : MonoBehaviour
             yield return new WaitForSeconds(resultDuration);
         }
 
+        controller?.DisengageCalmly();
         predictionRoutine = null;
     }
 

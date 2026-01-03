@@ -21,6 +21,7 @@ public class HoldToScanSystem : MonoBehaviour
     [SerializeField] private Transform scanOrigin;
     [SerializeField] private float maxScanDistance = 6f;
     [SerializeField, Range(0f, 20f)] private float maxAimAngle = 7f;
+    [SerializeField, Range(1f, 2.5f)] private float sustainAimAngleMultiplier = 1.35f;
 
     [Header("UI")]
     [SerializeField] private CanvasGroup scanUiGroup;
@@ -180,14 +181,15 @@ public class HoldToScanSystem : MonoBehaviour
         }
 
         Vector3 direction = toTarget.normalized;
+        float sustainAimAngle = maxAimAngle * Mathf.Max(1f, sustainAimAngleMultiplier);
         float aimAngle = Vector3.Angle(scanOrigin.forward, direction);
-        if (aimAngle > maxAimAngle)
+        if (aimAngle > sustainAimAngle)
         {
             return false;
         }
 
         float driftAngle = Vector3.Angle(initialAimDirection, direction);
-        if (driftAngle > maxAimAngle)
+        if (driftAngle > sustainAimAngle)
         {
             return false;
         }
