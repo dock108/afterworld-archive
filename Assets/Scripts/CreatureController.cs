@@ -1,4 +1,5 @@
 using System.Collections;
+using Afterworld.Systems.MiniGames;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -26,6 +27,7 @@ public class CreatureController : MonoBehaviour
     [SerializeField] private ArchiveManager archiveManager;
     [SerializeField] private CreatureEncounter encounter;
     [SerializeField] private InstinctPredictionGame instinctPredictionGame;
+    [SerializeField] private PatternMemoryMiniGame patternMemoryMiniGame;
 
     [Header("Distances")]
     [SerializeField] private float watchRadius = 8f;
@@ -76,7 +78,12 @@ public class CreatureController : MonoBehaviour
             instinctPredictionGame = GetComponent<InstinctPredictionGame>();
         }
 
-        if (instinctPredictionGame == null)
+        if (patternMemoryMiniGame == null)
+        {
+            patternMemoryMiniGame = GetComponent<PatternMemoryMiniGame>();
+        }
+
+        if (instinctPredictionGame == null && patternMemoryMiniGame == null)
         {
             instinctPredictionGame = gameObject.AddComponent<InstinctPredictionGame>();
         }
@@ -365,7 +372,14 @@ public class CreatureController : MonoBehaviour
 
         if (instinctPredictionGame != null)
         {
-            instinctPredictionGame.BeginPrediction(encounter != null ? encounter.Creature : null);
+            if (patternMemoryMiniGame != null)
+            {
+                patternMemoryMiniGame.BeginMemoryChallenge(encounter != null ? encounter.Creature : null);
+            }
+            else
+            {
+                instinctPredictionGame.BeginPrediction(encounter != null ? encounter.Creature : null);
+            }
         }
     }
 
