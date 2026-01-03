@@ -34,7 +34,7 @@ public class ArchiveLogUI : MonoBehaviour
     private string[] partialOnlineMessages =
     {
         "Core systems online.",
-        "Archive door unlocked."
+        "Signal lattice stabilized."
     };
 
     private readonly List<string> messages = new List<string>();
