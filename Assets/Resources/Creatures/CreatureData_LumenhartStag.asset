@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b755062a44bd4fc19386550f9036311b, type: 3}
+  m_Name: CreatureData_LumenhartStag
+  m_EditorClassIdentifier: 
+  id: lumenhart-stag
+  displayName: Lumenhart Stag
+  rarity: 2
+  encounterNotes: "Appears at the edge of open glades after storms. It watches silently until the rain scent fades."
+  behaviors:
+  - Holds a steady, heartbeat-like glow in its chest.
+  - Stamps twice before shifting to higher ground.
+  - Leaves prismatic hoofprints that linger briefly.

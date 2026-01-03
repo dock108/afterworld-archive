@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b755062a44bd4fc19386550f9036311b, type: 3}
+  m_Name: CreatureData_ThistlePouncer
+  m_EditorClassIdentifier: 
+  id: thistle-pouncer
+  displayName: Thistle Pouncer
+  rarity: 1
+  encounterNotes: "Circles in low brush before lunging to a new perch. It softens when offered dry seed pods."
+  behaviors:
+  - Springs vertically to peer over tall grass.
+  - Marks paths with crushed thistle scent.
+  - Retreats if footsteps are too rhythmic.
