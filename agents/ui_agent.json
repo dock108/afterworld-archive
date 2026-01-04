@@ -1,0 +1,135 @@
+{
+  "name": "UI Agent",
+  "version": "1.0.0",
+  "description": "Agent responsible for Unity UI systems and user interface",
+  
+  "role": "UI Development",
+  
+  "responsibilities": [
+    "Create UI controllers and managers",
+    "Implement HUD elements",
+    "Build menu systems",
+    "Handle UI animations and transitions",
+    "Manage UI state and navigation",
+    "Ensure mobile-friendly touch targets"
+  ],
+  
+  "ui_systems": {
+    "archive_log": {
+      "file": "Assets/Scripts/UI/ArchiveLogUI.cs",
+      "description": "Displays creature discovery log"
+    },
+    "creature_index": {
+      "file": "Assets/Scripts/UI/CreatureArchiveIndexUI.cs",
+      "description": "Bestiary/index of discovered creatures"
+    },
+    "encounter": {
+      "file": "Assets/Scripts/UI/EncounterUI.cs",
+      "description": "In-game encounter feedback"
+    },
+    "scan_toast": {
+      "file": "Assets/Scripts/UI/ScanToastUI.cs",
+      "description": "Toast notifications for scan results"
+    },
+    "onboarding": {
+      "file": "Assets/Scripts/UI/OnboardingHintSystem.cs",
+      "description": "Tutorial hints and guidance"
+    }
+  },
+  
+  "design_principles": {
+    "aesthetic": "Mysterious, nature-themed discovery game",
+    "color_palette": {
+      "background": "Deep forest greens and dark browns",
+      "accent": "Bioluminescent blues and greens",
+      "highlight": "Golden amber for discoveries",
+      "text": "Warm off-white"
+    },
+    "typography": {
+      "headers": "Stylized serif for fantasy feel",
+      "body": "Clean sans-serif for readability"
+    },
+    "mobile": {
+      "touch_targets": "Minimum 44x44 points",
+      "safe_areas": "Respect device notches and home indicators"
+    }
+  },
+  
+  "prompts": {
+    "create_ui_controller": {
+      "template": "Create a UI controller named {name}UI that manages {description}. Use Unity UI and follow existing patterns.",
+      "parameters": ["name", "description"]
+    },
+    "add_animation": {
+      "template": "Add {animation_type} animation to {ui_element}. Use DOTween or Unity's animation system.",
+      "parameters": ["animation_type", "ui_element"]
+    }
+  },
+  
+  "steps": [
+    {
+      "id": "1",
+      "name": "Design UI Flow",
+      "action": "plan_user_flow",
+      "inputs": {
+        "screens": "{required_screens}",
+        "transitions": "{navigation_flow}"
+      }
+    },
+    {
+      "id": "2",
+      "name": "Create Controller",
+      "action": "write_ui_script",
+      "inputs": {
+        "file_path": "Assets/Scripts/UI/{Name}UI.cs"
+      },
+      "depends_on": ["1"]
+    },
+    {
+      "id": "3",
+      "name": "Wire Up References",
+      "action": "add_ui_references",
+      "inputs": {
+        "use_serialized_fields": true,
+        "cache_in_awake": true
+      },
+      "depends_on": ["2"]
+    },
+    {
+      "id": "4",
+      "name": "Add Animations",
+      "action": "implement_transitions",
+      "inputs": {
+        "ease_type": "smooth",
+        "duration": "0.2-0.4s"
+      },
+      "depends_on": ["3"]
+    },
+    {
+      "id": "5",
+      "name": "Mobile Optimization",
+      "action": "verify_touch_targets",
+      "inputs": {
+        "min_size": 44,
+        "safe_area": true
+      },
+      "depends_on": ["4"]
+    }
+  ],
+  
+  "dependencies": [
+    "data_agent"
+  ],
+  
+  "templates": {
+    "ui_controller": "using UnityEngine;\nusing UnityEngine.UI;\n\n/// <summary>\n/// {Description}\n/// </summary>\npublic class {Name}UI : MonoBehaviour\n{\n    [Header(\"References\")]\n    [SerializeField] private CanvasGroup canvasGroup;\n    [SerializeField] private Button closeButton;\n\n    private void Awake()\n    {\n        closeButton?.onClick.AddListener(Hide);\n    }\n\n    public void Show()\n    {\n        gameObject.SetActive(true);\n        canvasGroup.alpha = 1f;\n    }\n\n    public void Hide()\n    {\n        gameObject.SetActive(false);\n    }\n}"
+  },
+  
+  "validation": {
+    "touch_targets_sized": true,
+    "null_checks_present": true,
+    "animations_smooth": true,
+    "text_readable": true
+  }
+}
+

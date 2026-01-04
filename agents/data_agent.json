@@ -1,0 +1,117 @@
+{
+  "name": "Data Agent",
+  "version": "1.0.0",
+  "description": "Agent responsible for ScriptableObjects, data models, and persistence",
+  
+  "role": "Data Architecture & Persistence",
+  
+  "responsibilities": [
+    "Design ScriptableObject data structures",
+    "Implement save/load systems",
+    "Create creature and item databases",
+    "Manage player progression data",
+    "Ensure data serialization works correctly",
+    "Build data validation systems"
+  ],
+  
+  "data_patterns": {
+    "scriptable_objects": {
+      "use_for": "Shared configuration, creature definitions, item data",
+      "location": "Assets/Resources/ or addressable folders",
+      "naming": "{Type}_{Name}.asset"
+    },
+    "runtime_data": {
+      "use_for": "Player state, session data, unlocks",
+      "pattern": "Separate data class from MonoBehaviour"
+    },
+    "persistence": {
+      "format": "JSON via JsonUtility",
+      "location": "Application.persistentDataPath"
+    }
+  },
+  
+  "existing_data": {
+    "creature_data": {
+      "class": "CreatureData",
+      "location": "Assets/Resources/Creatures/",
+      "fields": ["id", "displayName", "rarity", "encounterNotes", "behaviors"]
+    },
+    "creature_database": {
+      "class": "CreatureDatabase",
+      "location": "Assets/Resources/CreatureDatabase.asset",
+      "description": "Central registry of all creatures"
+    },
+    "save_data": {
+      "class": "SaveGameData",
+      "location": "Assets/Scripts/Systems/Save/",
+      "description": "Player progression and unlocks"
+    }
+  },
+  
+  "prompts": {
+    "create_data_type": {
+      "template": "Create a ScriptableObject for {data_type} with fields: {fields}. Include CreateAssetMenu attribute and proper serialization.",
+      "parameters": ["data_type", "fields"]
+    },
+    "add_save_field": {
+      "template": "Add {field_name} ({field_type}) to the save system. Ensure backward compatibility with existing saves.",
+      "parameters": ["field_name", "field_type"]
+    }
+  },
+  
+  "steps": [
+    {
+      "id": "1",
+      "name": "Define Data Structure",
+      "action": "design_schema",
+      "inputs": {
+        "fields": "{required_fields}",
+        "relationships": "{links_to_other_data}"
+      }
+    },
+    {
+      "id": "2",
+      "name": "Create ScriptableObject",
+      "action": "write_so_class",
+      "inputs": {
+        "file_path": "Assets/Scripts/{Category}/{ClassName}.cs",
+        "menu_path": "Afterworld/{Category}/{Name}"
+      },
+      "depends_on": ["1"]
+    },
+    {
+      "id": "3",
+      "name": "Add to Database",
+      "action": "register_in_database",
+      "inputs": {
+        "database_type": "{relevant_database}"
+      },
+      "depends_on": ["2"]
+    },
+    {
+      "id": "4",
+      "name": "Create Sample Assets",
+      "action": "create_test_data",
+      "inputs": {
+        "location": "Assets/Resources/{Category}/"
+      },
+      "depends_on": ["3"]
+    }
+  ],
+  
+  "dependencies": [],
+  
+  "templates": {
+    "scriptable_object": "using UnityEngine;\n\n[CreateAssetMenu(menuName = \"Afterworld/{Category}/{Name}\", fileName = \"{Name}_\")]\npublic class {ClassName} : ScriptableObject\n{\n    [SerializeField] private string id;\n    [SerializeField] private string displayName;\n    \n    public string Id => id;\n    public string DisplayName => displayName;\n}",
+    
+    "database": "using System.Collections.Generic;\nusing UnityEngine;\n\n[CreateAssetMenu(menuName = \"Afterworld/Databases/{Name} Database\")]\npublic class {Name}Database : ScriptableObject\n{\n    [SerializeField] private List<{ItemType}> items = new();\n    \n    public IReadOnlyList<{ItemType}> Items => items;\n    \n    public {ItemType} GetById(string id) => items.Find(x => x.Id == id);\n}"
+  },
+  
+  "validation": {
+    "serialization_works": true,
+    "ids_unique": true,
+    "no_circular_references": true,
+    "backward_compatible": true
+  }
+}
+

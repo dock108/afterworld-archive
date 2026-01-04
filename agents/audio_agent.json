@@ -1,0 +1,101 @@
+{
+  "name": "Audio Agent",
+  "version": "1.0.0",
+  "description": "Agent responsible for procedural audio and sound systems",
+  
+  "role": "Audio Systems Development",
+  
+  "responsibilities": [
+    "Implement procedural audio generation",
+    "Manage audio mixer and volume controls",
+    "Create ambient soundscapes",
+    "Handle sound effects and feedback audio",
+    "Optimize audio for mobile performance",
+    "Build audio state machines"
+  ],
+  
+  "audio_systems": {
+    "ambient": {
+      "file": "Assets/Scripts/Audio/AmbientAudioSystem.cs",
+      "description": "Procedural wind and hum loops"
+    },
+    "mixer": {
+      "file": "Assets/Audio/AmbienceMixer.mixer",
+      "description": "Unity Audio Mixer for volume control"
+    }
+  },
+  
+  "audio_philosophy": {
+    "procedural_first": "Generate audio rather than rely on large clip files",
+    "layered_ambience": "Multiple overlapping ambient layers",
+    "reactive": "Audio responds to player state and world conditions",
+    "mobile_conscious": "Optimize for battery and memory"
+  },
+  
+  "prompts": {
+    "add_sound_layer": {
+      "template": "Add a procedural {sound_type} layer to the ambient audio system. Should blend with existing layers.",
+      "parameters": ["sound_type"]
+    },
+    "create_sfx": {
+      "template": "Create a sound effect system for {event_type}. Use procedural generation or minimal clips.",
+      "parameters": ["event_type"]
+    }
+  },
+  
+  "steps": [
+    {
+      "id": "1",
+      "name": "Define Audio Need",
+      "action": "analyze_audio_context",
+      "inputs": {
+        "trigger": "{what_triggers_sound}",
+        "mood": "{emotional_quality}",
+        "duration": "{one_shot_or_loop}"
+      }
+    },
+    {
+      "id": "2",
+      "name": "Implement Generator",
+      "action": "write_audio_script",
+      "inputs": {
+        "file_path": "Assets/Scripts/Audio/{Name}.cs",
+        "uses_mixer": true
+      },
+      "depends_on": ["1"]
+    },
+    {
+      "id": "3",
+      "name": "Configure Mixer",
+      "action": "setup_mixer_groups",
+      "inputs": {
+        "groups": ["Master", "Ambience", "SFX", "UI"]
+      },
+      "depends_on": ["2"]
+    },
+    {
+      "id": "4",
+      "name": "Test Audio",
+      "action": "verify_in_scene",
+      "inputs": {
+        "check_clipping": true,
+        "check_levels": true
+      },
+      "depends_on": ["3"]
+    }
+  ],
+  
+  "dependencies": [],
+  
+  "templates": {
+    "audio_system": "using UnityEngine;\nusing UnityEngine.Audio;\n\n/// <summary>\n/// {Description}\n/// </summary>\npublic class {Name} : MonoBehaviour\n{\n    [Header(\"Mixer\")]\n    [SerializeField] private AudioMixerGroup mixerGroup;\n    \n    [Header(\"Settings\")]\n    [SerializeField] private float volume = 0.5f;\n    \n    private AudioSource audioSource;\n    \n    private void Awake()\n    {\n        audioSource = gameObject.AddComponent<AudioSource>();\n        audioSource.outputAudioMixerGroup = mixerGroup;\n        audioSource.loop = true;\n        audioSource.volume = volume;\n    }\n}"
+  },
+  
+  "validation": {
+    "no_clipping": true,
+    "uses_mixer": true,
+    "mobile_optimized": true,
+    "blends_smoothly": true
+  }
+}
+

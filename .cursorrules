@@ -1,0 +1,131 @@
+# AI Coding Rules
+
+## Universal Standards
+
+### Code Quality
+- Write clear, self-documenting code. Comments explain WHY, not WHAT.
+- Small, focused functions. One responsibility per function.
+- No magic numbers or hardcoded strings—use constants.
+- Fail fast. Validate inputs early, handle errors explicitly.
+- No silent failures. Log or surface all errors.
+
+### Change Philosophy
+- Prefer minimal, incremental changes over rewrites.
+- Don't refactor unrelated code while fixing bugs.
+- If something works, don't "improve" it without reason.
+- Leave code cleaner than you found it, but don't go overboard.
+
+### Dependencies
+- Don't add new dependencies casually.
+- Justify any new package inline.
+- Prefer standard library solutions when reasonable.
+
+### Testing
+- Add tests for new logic.
+- If fixing a bug, add a regression test.
+- Tests should be deterministic and fast.
+
+### Documentation
+- Update README if behavior changes.
+- Add CHANGELOG entries for user-facing changes.
+- Document breaking changes explicitly.
+
+### What NOT to Do
+- Don't over-engineer or over-abstract.
+- Don't add features that weren't requested.
+- Don't guess—ask or leave a TODO.
+- Don't use print/console.log in production code.
+
+---
+
+## Tech Stack: Unity / C#
+
+### Architecture
+- Component-based design: prefer composition over inheritance
+- MonoBehaviours for Unity lifecycle hooks
+- ScriptableObjects for data definitions and configuration
+- Plain C# classes for logic that doesn't need MonoBehaviour
+
+### C# Conventions
+- Follow Unity C# style guidelines
+- Use `PascalCase` for public members, `camelCase` for private
+- Use `[SerializeField]` for inspector-exposed private fields
+- Use `[RequireComponent]` to declare dependencies
+- Prefer `readonly` for fields that don't change after initialization
+
+### Unity Best Practices
+- Cache `GetComponent` calls in `Awake()`
+- Never access `Camera.main` in Update loops—cache it
+- Null-check `Camera.main` for headless/test scenarios
+- Keep `Update()` methods lean—heavy logic in coroutines or systems
+- Use `[Header("Section")]` to organize inspector fields
+
+### File Structure
+```
+Assets/
+├── Scripts/
+│   ├── Audio/         # Audio systems
+│   ├── Creatures/     # Creature logic and data
+│   ├── Scanning/      # Scanning mechanics
+│   ├── Systems/       # Core systems (save, mini-games)
+│   └── UI/            # UI controllers
+├── Resources/         # ScriptableObject assets
+├── Scenes/            # Unity scenes
+└── Settings/          # URP and project settings
+```
+
+### ScriptableObject Patterns
+```csharp
+[CreateAssetMenu(menuName = "Afterworld/Category/Name")]
+public class MyData : ScriptableObject
+{
+    [SerializeField] private string id;
+    public string Id => id;
+}
+```
+
+### Prohibited
+- `GameObject.Find()` in Update loops
+- Force modifications to `.unity` or `.meta` files as text
+- Empty catch blocks
+- Magic numbers without named constants
+- Debug.Log in production code (use conditional compilation)
+
+---
+
+## Project: Afterworld Archive
+
+### Purpose
+Unity 2022.3 LTS prototype—a creature-discovery exploration game with third-person controller, scanning mechanics, and procedural ambient audio.
+
+### Core Systems
+- **Third-Person Controller**: WASD movement, camera-relative direction
+- **Creature Encounters**: Discover and catalog creatures
+- **Scanning System**: Hold-to-scan for logging discoveries
+- **Archive/Bestiary**: Progressive knowledge unlock
+- **Procedural Audio**: Ambient soundscape without external clips
+
+### Key Directories
+- `Assets/Scripts/Creatures/` — Creature data, encounters, instincts
+- `Assets/Scripts/Scanning/` — Hold-to-scan mechanics
+- `Assets/Scripts/Systems/` — Save system, performance, mini-games
+- `Assets/Scripts/UI/` — All UI controllers
+- `Assets/Scripts/Audio/` — Procedural ambient audio
+- `Assets/Resources/` — ScriptableObject databases
+
+### Protected Files
+- `*.unity` scene files — Edit via Unity editor only
+- `*.meta` files — Never manually edit
+- `ProjectSettings/` — Configure via Unity editor
+
+### Development
+1. Open with Unity 2022.3.10f1 (or compatible 2022.3 LTS)
+2. Load scene: `Assets/Scenes/Main.unity`
+3. Enter Play Mode to test
+
+### Mobile Considerations
+- Target 60fps on mid-range devices
+- Use `MobilePerformanceTuner` for runtime quality adjustments
+- Pool frequently spawned objects
+- Minimize per-frame allocations
+

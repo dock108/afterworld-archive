@@ -1,0 +1,128 @@
+{
+  "name": "Gameplay Agent",
+  "version": "1.0.0",
+  "description": "Agent responsible for core gameplay systems and mechanics",
+  
+  "role": "Gameplay Systems Development",
+  
+  "responsibilities": [
+    "Implement player controller features",
+    "Create creature encounter systems",
+    "Build scanning and discovery mechanics",
+    "Design progression and unlock systems",
+    "Handle player input and feedback",
+    "Ensure smooth gameplay feel"
+  ],
+  
+  "unity_patterns": {
+    "component_design": {
+      "description": "Use composition over inheritance",
+      "prefer": "Multiple focused MonoBehaviours",
+      "avoid": "Deep inheritance hierarchies"
+    },
+    "serialization": {
+      "inspector_fields": "[SerializeField] private",
+      "public_readonly": "Use properties with private setters",
+      "data_objects": "ScriptableObjects for shared data"
+    },
+    "performance": {
+      "cache_references": "Awake() for GetComponent calls",
+      "avoid_find": "Never use Find() in Update",
+      "pool_objects": "Object pooling for spawned entities"
+    }
+  },
+  
+  "key_systems": {
+    "third_person_controller": {
+      "file": "Assets/Scripts/ThirdPersonController.cs",
+      "description": "WASD movement with camera-relative direction"
+    },
+    "creature_encounter": {
+      "file": "Assets/Scripts/Creatures/CreatureEncounter.cs",
+      "description": "Handles creature discovery events"
+    },
+    "scanning": {
+      "directory": "Assets/Scripts/Scanning/",
+      "description": "Hold-to-scan mechanics for cataloging"
+    }
+  },
+  
+  "prompts": {
+    "add_mechanic": {
+      "template": "Implement a {mechanic_name} system that {description}. Use Unity's component model and follow existing code patterns.",
+      "parameters": ["mechanic_name", "description"]
+    },
+    "extend_controller": {
+      "template": "Add {feature} to the ThirdPersonController. Maintain smooth feel and camera-relative input.",
+      "parameters": ["feature"]
+    }
+  },
+  
+  "steps": [
+    {
+      "id": "1",
+      "name": "Analyze Requirements",
+      "action": "understand_mechanic_needs",
+      "inputs": {
+        "feature": "{feature_name}",
+        "player_actions": "{expected_inputs}",
+        "feedback": "{visual_audio_feedback}"
+      }
+    },
+    {
+      "id": "2",
+      "name": "Design Component",
+      "action": "plan_monobehaviour",
+      "inputs": {
+        "responsibilities": "single_purpose",
+        "dependencies": "{required_components}"
+      },
+      "depends_on": ["1"]
+    },
+    {
+      "id": "3",
+      "name": "Implement Logic",
+      "action": "write_script",
+      "inputs": {
+        "file_path": "Assets/Scripts/{Category}/{ClassName}.cs"
+      },
+      "depends_on": ["2"]
+    },
+    {
+      "id": "4",
+      "name": "Add Inspector Config",
+      "action": "add_serialized_fields",
+      "inputs": {
+        "use_headers": true,
+        "tooltips": true
+      },
+      "depends_on": ["3"]
+    },
+    {
+      "id": "5",
+      "name": "Test in Play Mode",
+      "action": "manual_verification",
+      "inputs": {
+        "scene": "Assets/Scenes/Main.unity"
+      },
+      "depends_on": ["4"]
+    }
+  ],
+  
+  "dependencies": [
+    "data_agent",
+    "ui_agent"
+  ],
+  
+  "templates": {
+    "monobehaviour": "using UnityEngine;\n\n/// <summary>\n/// {Description}\n/// </summary>\npublic class {ClassName} : MonoBehaviour\n{\n    [Header(\"Settings\")]\n    [SerializeField] private float exampleValue = 1f;\n\n    private void Awake()\n    {\n        // Cache references\n    }\n\n    private void Update()\n    {\n        // Per-frame logic\n    }\n}"
+  },
+  
+  "validation": {
+    "compiles_without_errors": true,
+    "no_find_in_update": true,
+    "serialized_fields_documented": true,
+    "follows_naming_conventions": true
+  }
+}
+

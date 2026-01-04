@@ -1,0 +1,135 @@
+{
+  "name": "Systems Agent",
+  "version": "1.0.0",
+  "description": "Agent responsible for core systems, performance, and infrastructure",
+  
+  "role": "Systems Architecture & Performance",
+  
+  "responsibilities": [
+    "Design and maintain save system",
+    "Implement performance optimization",
+    "Build mini-game frameworks",
+    "Create world state management",
+    "Handle platform-specific concerns",
+    "Manage scene loading and bootstrapping"
+  ],
+  
+  "key_systems": {
+    "save_system": {
+      "directory": "Assets/Scripts/Systems/Save/",
+      "files": ["SaveGameManager.cs", "SaveGameData.cs", "ScanProgressTracker.cs"],
+      "description": "Player progression persistence"
+    },
+    "performance": {
+      "file": "Assets/Scripts/Systems/MobilePerformanceTuner.cs",
+      "description": "Runtime quality adjustments for mobile"
+    },
+    "mini_games": {
+      "directory": "Assets/Scripts/Systems/MiniGames/",
+      "description": "Framework for encounter mini-games"
+    },
+    "world_state": {
+      "file": "Assets/Scripts/Systems/WorldConditionState.cs",
+      "description": "Time of day, weather, world conditions"
+    },
+    "bootstrap": {
+      "file": "Assets/Scripts/ThirdPersonBootstrap.cs",
+      "description": "Scene initialization and setup"
+    }
+  },
+  
+  "architecture_patterns": {
+    "singleton": {
+      "when": "Truly global managers (SaveManager, AudioManager)",
+      "avoid": "Overuse—prefer dependency injection patterns"
+    },
+    "service_locator": {
+      "when": "Systems that need discovery without tight coupling"
+    },
+    "event_driven": {
+      "when": "Decoupled communication between systems",
+      "use": "C# events or UnityEvents"
+    }
+  },
+  
+  "prompts": {
+    "add_system": {
+      "template": "Create a {system_name} system that {description}. Follow existing patterns and ensure it integrates with save system if needed.",
+      "parameters": ["system_name", "description"]
+    },
+    "optimize": {
+      "template": "Optimize {target} for mobile performance. Focus on {metric} without sacrificing {priority}.",
+      "parameters": ["target", "metric", "priority"]
+    }
+  },
+  
+  "steps": [
+    {
+      "id": "1",
+      "name": "Analyze Requirements",
+      "action": "define_system_scope",
+      "inputs": {
+        "responsibilities": "{what_system_does}",
+        "dependencies": "{other_systems}",
+        "persistence": "{needs_save}"
+      }
+    },
+    {
+      "id": "2",
+      "name": "Design Interface",
+      "action": "create_api",
+      "inputs": {
+        "public_methods": "{required_functionality}",
+        "events": "{notifications}"
+      },
+      "depends_on": ["1"]
+    },
+    {
+      "id": "3",
+      "name": "Implement System",
+      "action": "write_system_code",
+      "inputs": {
+        "file_path": "Assets/Scripts/Systems/{Name}/{ClassName}.cs"
+      },
+      "depends_on": ["2"]
+    },
+    {
+      "id": "4",
+      "name": "Integrate with Save",
+      "action": "add_persistence",
+      "inputs": {
+        "save_data_class": "SaveGameData",
+        "load_timing": "on_game_start"
+      },
+      "depends_on": ["3"]
+    },
+    {
+      "id": "5",
+      "name": "Performance Test",
+      "action": "profile_system",
+      "inputs": {
+        "target_device": "mobile",
+        "frame_budget": "16ms"
+      },
+      "depends_on": ["4"]
+    }
+  ],
+  
+  "dependencies": [
+    "data_agent"
+  ],
+  
+  "templates": {
+    "manager": "using UnityEngine;\n\n/// <summary>\n/// {Description}\n/// </summary>\npublic class {Name}Manager : MonoBehaviour\n{\n    public static {Name}Manager Instance { get; private set; }\n    \n    private void Awake()\n    {\n        if (Instance != null && Instance != this)\n        {\n            Destroy(gameObject);\n            return;\n        }\n        Instance = this;\n        DontDestroyOnLoad(gameObject);\n    }\n}",
+    
+    "mini_game": "using UnityEngine;\n\n/// <summary>\n/// {Description}\n/// </summary>\npublic class {Name}MiniGame : MiniGameBase\n{\n    public override void StartGame()\n    {\n        // Initialize mini-game\n    }\n    \n    public override void EndGame(bool success)\n    {\n        // Cleanup and report result\n    }\n}"
+  },
+  
+  "validation": {
+    "no_memory_leaks": true,
+    "save_works_correctly": true,
+    "mobile_performance": true,
+    "graceful_degradation": true
+  }
+}
+
