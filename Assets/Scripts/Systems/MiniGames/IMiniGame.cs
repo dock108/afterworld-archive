@@ -1,6 +1,6 @@
 using System;
 
-namespace Afterworld.Systems.MiniGames
+namespace Vestige.Systems.MiniGames
 {
     public enum MiniGamePhase
     {

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Afterworld/Creatures/Creature Data", fileName = "CreatureData_")]
+[CreateAssetMenu(menuName = "Vestige/Creatures/Creature Data", fileName = "CreatureData_")]
 public class CreatureData : ScriptableObject
 {
     [SerializeField] private string id;

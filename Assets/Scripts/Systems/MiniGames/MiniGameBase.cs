@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-namespace Afterworld.Systems.MiniGames
+namespace Vestige.Systems.MiniGames
 {
     public abstract class MiniGameBase : MonoBehaviour, IMiniGame
     {

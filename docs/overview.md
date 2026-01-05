@@ -1,20 +1,100 @@
-# Afterworld Archive Overview
+# Vestige — Project Overview
 
-Afterworld Archive is a Unity 2022.3 LTS prototype that spins up a lightweight third-person scene with a controllable character, camera follow, and procedural ambient audio.
+Vestige is a Unity 2022.3 LTS prototype exploring creature discovery, archive-based progression, and environmental storytelling through interactive exploration.
 
-## Project layout
+## Creative Direction
 
-- `Assets/Scenes/Main.unity` - Primary scene used for local play mode.
-- `Assets/Scripts/ThirdPersonBootstrap.cs` - Spawns the ground plane, player, and follow camera if they are missing.
-- `Assets/Scripts/ThirdPersonController.cs` - Handles third-person movement input and character motion.
-- `Assets/Scripts/Audio/AmbientAudioSystem.cs` - Generates procedural wind and hum loops and applies audio mixer volume controls.
+**Core Experience:** Wander through a world, encounter mysterious creatures, and build understanding through observation and cataloging.
 
-## Scene file size
+**Tone:** Atmospheric, curious, unhurried. Discovery over combat. Memory over conquest.
 
-Unity `.unity` scene files are serialized data and tend to be much larger than code files. The `Main.unity` scene is expected to be verbose and should be managed through the Unity editor rather than split manually.
+**Key Themes:**
+- Traces left behind — remnants that tell stories
+- Building knowledge through presence and attention
+- The archive as both goal and narrative device
 
-## Runtime systems
+## What's Implemented
 
-- **Bootstrap:** Ensures the minimal scene scaffolding is created at runtime so the project can run without manually placed objects.
-- **Movement:** Character movement aligns to the camera's forward axis and supports walking/jogging.
-- **Audio:** Procedural audio keeps ambience self-contained without external clip files.
+### Core Systems
+
+| System | Status | Description |
+|--------|--------|-------------|
+| Third-Person Controller | ✅ Working | WASD movement, camera-relative direction |
+| Camera Follow | ✅ Working | Smooth follow camera with the player |
+| Procedural Audio | ✅ Working | Ambient soundscape generated at runtime |
+| Creature Encounters | ✅ Working | Spawn and interact with creatures |
+| Hold-to-Scan | ✅ Working | Scan targets to log discoveries |
+| Archive/Bestiary | ✅ Working | Progressive unlock of creature knowledge |
+| Save System | ✅ Working | Persist player progress |
+
+### Creature Data
+
+Six sample creatures with full data definitions:
+- Ember Spiral
+- Glowcap Sprinter
+- Hollow Mossback
+- Lumenhart Stag
+- Mistwing Skiff
+- Thistle Pouncer
+
+Each creature has: rarity, encounter notes, behaviors, and instinct data.
+
+## Project Layout
+
+```
+Assets/
+├── Scripts/
+│   ├── ThirdPersonBootstrap.cs    — Scene scaffolding at runtime
+│   ├── ThirdPersonController.cs   — Player movement
+│   ├── Audio/                     — Procedural ambient audio
+│   ├── Creatures/                 — Creature data, encounters, instincts
+│   ├── Scanning/                  — Hold-to-scan mechanics
+│   ├── Systems/                   — Save system, mini-games, performance
+│   └── UI/                        — All UI controllers
+├── Resources/
+│   ├── CreatureDatabase.asset     — Central creature registry
+│   └── Creatures/                 — Individual creature definitions
+└── Scenes/
+    └── Main.unity                 — Primary scene
+```
+
+## Runtime Behavior
+
+- **Bootstrap:** `ThirdPersonBootstrap.cs` ensures minimal scene scaffolding exists at runtime — ground plane, player, camera — so the project runs without manually placed objects.
+- **Movement:** Character movement aligns to camera forward axis. Supports walking/jogging.
+- **Audio:** Procedural wind and hum loops. No external audio files required.
+- **Scanning:** Hold input on valid targets to fill a scan meter and log discoveries.
+- **Archive:** Scanned creatures unlock progressive knowledge tiers.
+
+## Technical Notes
+
+### Scene Files
+
+Unity `.unity` files are serialized data and can be large. `Main.unity` should be edited through the Unity editor, not manually.
+
+### ScriptableObject Patterns
+
+Game data uses ScriptableObjects for easy authoring:
+
+```csharp
+[CreateAssetMenu(menuName = "Vestige/Creatures/Creature Data")]
+public class CreatureData : ScriptableObject
+{
+    [SerializeField] private string id;
+    [SerializeField] private string displayName;
+    [SerializeField] private CreatureRarity rarity;
+}
+```
+
+### Mobile Considerations
+
+- Target 60fps on mid-range devices
+- `MobilePerformanceTuner` adjusts quality at runtime
+- Object pooling for frequently spawned entities
+- Minimize per-frame allocations
+
+## Development Setup
+
+1. Open with **Unity 2022.3.10f1** (or compatible 2022.3 LTS)
+2. Load scene: `Assets/Scenes/Main.unity`
+3. Enter Play Mode to test

@@ -1,10 +1,12 @@
-# AGENTS.md — Afterworld Archive
+# AGENTS.md — Vestige
 
 > This file provides context for AI agents (Codex, Cursor, Copilot) working on this codebase.
 
 ## Quick Context
 
-**What is this?** Unity 2022.3 LTS prototype—a creature-discovery exploration game with third-person controller, scanning mechanics, and procedural ambient audio.
+**What is this?** Unity 2022.3 LTS prototype exploring creature discovery, archive-based progression, and interactive exploration. Conceptual/experimental.
+
+**Creative Direction:** Memory and traces. Discover creatures, scan to catalog, build understanding through observation. Atmospheric and curious tone.
 
 **Tech Stack:** Unity 2022.3, C#, Universal Render Pipeline (URP)
 
@@ -59,7 +61,7 @@
 Creatures and game data use ScriptableObjects:
 
 ```csharp
-[CreateAssetMenu(menuName = "Afterworld/Creatures/Creature Data")]
+[CreateAssetMenu(menuName = "Vestige/Creatures/Creature Data")]
 public class CreatureData : ScriptableObject
 {
     [SerializeField] private string id;
@@ -90,4 +92,3 @@ Unity doesn't have built-in unit testing in this project yet. For now:
 ## Related Documentation
 
 - `docs/overview.md` — Project layout and runtime systems
-

@@ -1,18 +1,51 @@
-# Afterworld Archive
+# Vestige
 
-Afterworld Archive is a Unity 2022.3 LTS prototype featuring a simple third-person controller, follow camera, and procedural ambient audio.
+> *Previously "Afterworld Archive" — renamed to better reflect the project's direction toward memory, discovery, and interactive exploration.*
 
-## Run locally
+**Vestige** is a conceptual Unity prototype exploring narrative systems and world-building mechanics. It's an experimental sandbox for creature discovery, environmental storytelling, and archive-based progression.
 
-1. Open the project with **Unity 2022.3.10f1** (or a compatible 2022.3 LTS editor).
-2. Load the main scene: `Assets/Scenes/Main.unity`.
-3. Enter Play mode to spawn the character, camera, and ambience.
+## What This Prototype Explores
 
-## Deployment basics
+- **Creature Discovery** — Encounter and catalog mysterious beings in an open world
+- **Scanning Mechanics** — Hold-to-scan system for logging discoveries and building knowledge
+- **Archive Progression** — Unlock creature lore, behaviors, and instincts through repeated encounters
+- **Procedural Ambience** — Self-contained audio atmosphere without external sound files
+- **Memory Systems** — Save/load progression tied to what you've discovered
 
-- Use Unity's standard build pipeline (File → Build Settings) for the desired platform.
-- Ensure the `Main.unity` scene is included in the build settings before exporting a player.
+## What You Can Do Right Now
 
-## More documentation
+1. **Move** — Third-person controller with WASD movement and camera-relative direction
+2. **Explore** — Navigate a minimal scene with procedural ambient audio
+3. **Scan** — Hold to scan creatures and objects in the world
+4. **Catalog** — Build an archive of creature knowledge through discovery
 
-Deeper documentation lives in [`/docs`](docs/overview.md).
+This is a **work-in-progress prototype**. Systems are functional but minimal — the focus is on exploring game feel and narrative mechanics, not production polish.
+
+## Development Status
+
+🧪 **Conceptual / Experimental**
+
+This project is a creative sandbox for testing ideas. Expect rough edges, placeholder content, and systems that may change significantly.
+
+## Run Locally
+
+1. Open with **Unity 2022.3.10f1** (or compatible 2022.3 LTS)
+2. Load scene: `Assets/Scenes/Main.unity`
+3. Enter Play Mode
+
+## Build
+
+Use Unity's standard build pipeline (File → Build Settings). Ensure `Main.unity` is included in build settings.
+
+## Documentation
+
+See [`/docs`](docs/overview.md) for technical details and system breakdowns.
+
+---
+
+<details>
+<summary>Historical Note</summary>
+
+This project was originally called "Afterworld Archive" with an underworld/afterlife theme. The direction shifted toward memory and exploration, making the old name no longer representative.
+
+</details>

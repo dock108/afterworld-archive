@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Afterworld/Creatures/Creature Database", fileName = "CreatureDatabase")]
+[CreateAssetMenu(menuName = "Vestige/Creatures/Creature Database", fileName = "CreatureDatabase")]
 public class CreatureDatabase : ScriptableObject
 {
     [SerializeField] private List<CreatureData> creatures = new List<CreatureData>();

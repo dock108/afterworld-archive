@@ -75,7 +75,7 @@
       "action": "write_so_class",
       "inputs": {
         "file_path": "Assets/Scripts/{Category}/{ClassName}.cs",
-        "menu_path": "Afterworld/{Category}/{Name}"
+        "menu_path": "Vestige/{Category}/{Name}"
       },
       "depends_on": ["1"]
     },
@@ -102,9 +102,9 @@
   "dependencies": [],
   
   "templates": {
-    "scriptable_object": "using UnityEngine;\n\n[CreateAssetMenu(menuName = \"Afterworld/{Category}/{Name}\", fileName = \"{Name}_\")]\npublic class {ClassName} : ScriptableObject\n{\n    [SerializeField] private string id;\n    [SerializeField] private string displayName;\n    \n    public string Id => id;\n    public string DisplayName => displayName;\n}",
+    "scriptable_object": "using UnityEngine;\n\n[CreateAssetMenu(menuName = \"Vestige/{Category}/{Name}\", fileName = \"{Name}_\")]\npublic class {ClassName} : ScriptableObject\n{\n    [SerializeField] private string id;\n    [SerializeField] private string displayName;\n    \n    public string Id => id;\n    public string DisplayName => displayName;\n}",
     
-    "database": "using System.Collections.Generic;\nusing UnityEngine;\n\n[CreateAssetMenu(menuName = \"Afterworld/Databases/{Name} Database\")]\npublic class {Name}Database : ScriptableObject\n{\n    [SerializeField] private List<{ItemType}> items = new();\n    \n    public IReadOnlyList<{ItemType}> Items => items;\n    \n    public {ItemType} GetById(string id) => items.Find(x => x.Id == id);\n}"
+    "database": "using System.Collections.Generic;\nusing UnityEngine;\n\n[CreateAssetMenu(menuName = \"Vestige/Databases/{Name} Database\")]\npublic class {Name}Database : ScriptableObject\n{\n    [SerializeField] private List<{ItemType}> items = new();\n    \n    public IReadOnlyList<{ItemType}> Items => items;\n    \n    public {ItemType} GetById(string id) => items.Find(x => x.Id == id);\n}"
   },
   
   "validation": {

@@ -1,5 +1,5 @@
 using System.Collections;
-using Afterworld.Systems.MiniGames;
+using Vestige.Systems.MiniGames;
 using UnityEngine;
 using UnityEngine.AI;
 

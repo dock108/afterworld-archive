@@ -12,7 +12,7 @@ public class CreatureEncounter : MonoBehaviour
     [SerializeField] private string creatureId;
     [SerializeField] private CreatureData creature;
     [SerializeField] private CreatureSpawnTable spawnTable;
-    [SerializeField] private Afterworld.Systems.WorldConditionState worldConditions;
+    [SerializeField] private Vestige.Systems.WorldConditionState worldConditions;
     [SerializeField] private bool rollFromSpawnTableOnAwake = true;
     [SerializeField] private bool isElusive;
 
@@ -43,7 +43,7 @@ public class CreatureEncounter : MonoBehaviour
         {
             if (worldConditions == null)
             {
-                worldConditions = FindObjectOfType<Afterworld.Systems.WorldConditionState>();
+                worldConditions = FindObjectOfType<Vestige.Systems.WorldConditionState>();
             }
 
             if (spawnTable.TryPickCreature(worldConditions, out CreatureData rolled))

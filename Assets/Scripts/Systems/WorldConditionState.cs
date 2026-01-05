@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Afterworld.Systems
+namespace Vestige.Systems
 {
     public enum WorldTimeOfDay
     {

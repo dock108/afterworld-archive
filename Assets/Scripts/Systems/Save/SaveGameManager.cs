@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class SaveGameManager : MonoBehaviour
 {
-    private const string SaveFileName = "afterworld_save.json";
+    private const string SaveFileName = "vestige_save.json";
 
     [SerializeField, Min(5f)] private float autosaveInterval = 45f;
 

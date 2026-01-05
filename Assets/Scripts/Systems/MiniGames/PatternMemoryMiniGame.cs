@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-namespace Afterworld.Systems.MiniGames
+namespace Vestige.Systems.MiniGames
 {
     [RequireComponent(typeof(CreatureController))]
     public class PatternMemoryMiniGame : MonoBehaviour

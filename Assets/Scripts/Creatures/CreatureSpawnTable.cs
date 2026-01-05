@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using Afterworld.Systems;
+using Vestige.Systems;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Afterworld/Creatures/Creature Spawn Table", fileName = "CreatureSpawnTable_")]
+[CreateAssetMenu(menuName = "Vestige/Creatures/Creature Spawn Table", fileName = "CreatureSpawnTable_")]
 public class CreatureSpawnTable : ScriptableObject
 {
     [System.Serializable]
