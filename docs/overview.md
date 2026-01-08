@@ -1,6 +1,6 @@
 # Vestige — Project Overview
 
-Vestige is a Unity 6 LTS prototype exploring creature discovery, archive-based progression, and environmental storytelling through interactive exploration.
+Vestige is a Unity 6.3 LTS prototype exploring creature discovery, archive-based progression, and environmental storytelling through interactive exploration.
 
 ## Creative Direction
 
@@ -95,6 +95,6 @@ public class CreatureData : ScriptableObject
 
 ## Development Setup
 
-1. Open with **Unity 6.0 LTS** (6000.0.32f1 or compatible)
+1. Open with **Unity 6.3 LTS** (6000.3.2f1 or compatible)
 2. Load scene: `Assets/Scenes/Main.unity`
 3. Enter Play Mode to test

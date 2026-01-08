@@ -29,7 +29,7 @@ This project is a creative sandbox for testing ideas. Expect rough edges, placeh
 
 ## Run Locally
 
-1. Open with **Unity 6.0 LTS** (6000.0.32f1 or compatible)
+1. Open with **Unity 6.3 LTS** (6000.3.2f1 or compatible)
 2. Load scene: `Assets/Scenes/Main.unity`
 3. Enter Play Mode
 
@@ -56,6 +56,6 @@ See [`/docs`](docs/overview.md) for technical details and system breakdowns.
 
 This project was originally called "Afterworld Archive" with an underworld/afterlife theme. The direction shifted toward memory and exploration, making the old name no longer representative.
 
-**January 2026:** Upgraded from Unity 2022.3 LTS to Unity 6.0 LTS for macOS 26 Tahoe compatibility and native Apple Silicon support.
+**January 2026:** Upgraded from Unity 2022.3 LTS to Unity 6.3 LTS for macOS 26 Tahoe compatibility and native Apple Silicon support.
 
 </details>

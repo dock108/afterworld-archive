@@ -84,7 +84,7 @@ This project includes PlayMode smoke tests using Unity Test Framework:
 
 ## Development Setup
 
-1. Open with **Unity 6.0 LTS** (6000.0.32f1 or compatible)
+1. Open with **Unity 6.3 LTS** (6000.3.2f1 or compatible)
 2. Load scene: `Assets/Scenes/Main.unity`
 3. Enter Play Mode to test
 
