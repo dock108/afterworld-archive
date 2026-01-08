@@ -1,4 +1,4 @@
-using Cinemachine;
+using Unity.Cinemachine;
 using UnityEngine;
 
 /// <summary>
@@ -80,33 +80,25 @@ public class ThirdPersonBootstrap : MonoBehaviour
         GetOrAddComponent<CinemachineBrain>(mainCamera.gameObject);
 
         GameObject vcamObject = GameObject.Find("ThirdPersonCamera");
-        CinemachineVirtualCamera vcam;
         if (vcamObject == null)
         {
             vcamObject = new GameObject("ThirdPersonCamera");
         }
-        vcam = GetOrAddComponent<CinemachineVirtualCamera>(vcamObject);
 
+        CinemachineCamera vcam = GetOrAddComponent<CinemachineCamera>(vcamObject);
         vcam.Follow = followTarget;
         vcam.LookAt = followTarget;
 
-        CinemachineTransposer transposer = GetOrAddCinemachineComponent<CinemachineTransposer>(vcam);
+        // Cinemachine 3 uses regular Unity components for position/rotation control
+        CinemachineFollow follow = GetOrAddComponent<CinemachineFollow>(vcamObject);
+        follow.FollowOffset = cameraOffset;
+        follow.TrackerSettings.PositionDamping = new Vector3(0.6f, 0.8f, 0.9f);
 
-        transposer.m_FollowOffset = cameraOffset;
-        transposer.m_XDamping = 0.6f;
-        transposer.m_YDamping = 0.8f;
-        transposer.m_ZDamping = 0.9f;
-
-        CinemachineComposer composer = GetOrAddCinemachineComponent<CinemachineComposer>(vcam);
-
-        composer.m_ScreenX = 0.5f;
-        composer.m_ScreenY = 0.55f;
-        composer.m_DeadZoneWidth = 0f;
-        composer.m_DeadZoneHeight = 0f;
-        composer.m_SoftZoneWidth = 0.8f;
-        composer.m_SoftZoneHeight = 0.8f;
-        composer.m_HorizontalDamping = 0.6f;
-        composer.m_VerticalDamping = 0.6f;
+        CinemachineRotationComposer composer = GetOrAddComponent<CinemachineRotationComposer>(vcamObject);
+        composer.Composition.ScreenPosition = new Vector2(0.5f, 0.55f);
+        composer.Composition.DeadZone = new Vector2(0f, 0f);
+        composer.Composition.SoftZone = new Vector2(0.8f, 0.8f);
+        composer.Damping = new Vector2(0.6f, 0.6f);
     }
 
     private static T GetOrAddComponent<T>(GameObject target) where T : Component
@@ -115,18 +107,6 @@ public class ThirdPersonBootstrap : MonoBehaviour
         if (component == null)
         {
             component = target.AddComponent<T>();
-        }
-
-        return component;
-    }
-
-    private static T GetOrAddCinemachineComponent<T>(CinemachineVirtualCamera vcam)
-        where T : CinemachineComponentBase
-    {
-        T component = vcam.GetCinemachineComponent<T>();
-        if (component == null)
-        {
-            component = vcam.AddCinemachineComponent<T>();
         }
 
         return component;

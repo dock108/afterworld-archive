@@ -1,6 +1,6 @@
 # Vestige — Project Overview
 
-Vestige is a Unity 2022.3 LTS prototype exploring creature discovery, archive-based progression, and environmental storytelling through interactive exploration.
+Vestige is a Unity 6 LTS prototype exploring creature discovery, archive-based progression, and environmental storytelling through interactive exploration.
 
 ## Creative Direction
 
@@ -20,7 +20,7 @@ Vestige is a Unity 2022.3 LTS prototype exploring creature discovery, archive-ba
 | System | Status | Description |
 |--------|--------|-------------|
 | Third-Person Controller | ✅ Working | WASD movement, camera-relative direction |
-| Camera Follow | ✅ Working | Smooth follow camera with the player |
+| Camera Follow | ✅ Working | Smooth follow camera with Cinemachine 3 |
 | Procedural Audio | ✅ Working | Ambient soundscape generated at runtime |
 | Creature Encounters | ✅ Working | Spawn and interact with creatures |
 | Hold-to-Scan | ✅ Working | Scan targets to log discoveries |
@@ -95,6 +95,6 @@ public class CreatureData : ScriptableObject
 
 ## Development Setup
 
-1. Open with **Unity 2022.3.10f1** (or compatible 2022.3 LTS)
+1. Open with **Unity 6.0 LTS** (6000.0.32f1 or compatible)
 2. Load scene: `Assets/Scenes/Main.unity`
 3. Enter Play Mode to test

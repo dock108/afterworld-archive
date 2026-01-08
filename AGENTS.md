@@ -4,11 +4,11 @@
 
 ## Quick Context
 
-**What is this?** Unity 2022.3 LTS prototype exploring creature discovery, archive-based progression, and interactive exploration. Conceptual/experimental.
+**What is this?** Unity 6 LTS prototype exploring creature discovery, archive-based progression, and interactive exploration. Conceptual/experimental.
 
 **Creative Direction:** Memory and traces. Discover creatures, scan to catalog, build understanding through observation. Atmospheric and curious tone.
 
-**Tech Stack:** Unity 2022.3, C#, Universal Render Pipeline (URP)
+**Tech Stack:** Unity 6, C#, Universal Render Pipeline (URP), Cinemachine 3
 
 **Key Directories:**
 - `Assets/Scripts/` — All game logic
@@ -78,14 +78,13 @@ When adding new data types:
 
 ## Testing
 
-Unity doesn't have built-in unit testing in this project yet. For now:
-- Test in Play Mode manually
-- Use Debug.Log for verification
-- Consider adding Unity Test Framework if scope grows
+This project includes PlayMode smoke tests using Unity Test Framework:
+- Open **Window → General → Test Runner**
+- Run **PlayMode** tests to verify core systems bootstrap correctly
 
 ## Development Setup
 
-1. Open with **Unity 2022.3.10f1** (or compatible 2022.3 LTS)
+1. Open with **Unity 6.0 LTS** (6000.0.32f1 or compatible)
 2. Load scene: `Assets/Scenes/Main.unity`
 3. Enter Play Mode to test
 

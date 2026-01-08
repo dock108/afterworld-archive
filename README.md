@@ -29,9 +29,17 @@ This project is a creative sandbox for testing ideas. Expect rough edges, placeh
 
 ## Run Locally
 
-1. Open with **Unity 2022.3.10f1** (or compatible 2022.3 LTS)
+1. Open with **Unity 6.0 LTS** (6000.0.32f1 or compatible)
 2. Load scene: `Assets/Scenes/Main.unity`
 3. Enter Play Mode
+
+### Troubleshooting
+
+If Unity fails to open the project with errors like `GetManagerFromContext` / `MonoManager`:
+
+- Quit Unity
+- Delete `Library/`, `Temp/`, and `obj/` in the project folder
+- Re-open the project so Unity regenerates package caches/lock state
 
 ## Build
 
@@ -47,5 +55,7 @@ See [`/docs`](docs/overview.md) for technical details and system breakdowns.
 <summary>Historical Note</summary>
 
 This project was originally called "Afterworld Archive" with an underworld/afterlife theme. The direction shifted toward memory and exploration, making the old name no longer representative.
+
+**January 2026:** Upgraded from Unity 2022.3 LTS to Unity 6.0 LTS for macOS 26 Tahoe compatibility and native Apple Silicon support.
 
 </details>
